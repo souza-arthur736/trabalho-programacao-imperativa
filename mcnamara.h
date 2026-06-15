@@ -3,7 +3,7 @@
 
 #define MAX_DENTISTAS 10
 #define MAX_PACIENTES 100
-#define TAM_DIAGNOSTICO 2500
+#define TAM_DIAGNOSTICO 4000
 
 typedef struct {
     int id;
@@ -37,6 +37,48 @@ typedef struct {
     int afaiMin;
     int afaiMax;
 } TabelaMcNamara;
+
+
+typedef struct {
+    int tipoMaxila;       /* 1=normal, 2=protruida, 3=retruida */
+    int mmMaxila;
+    int CoAOriginal;
+    int CoGnReal;
+    int AFAIReal;
+    double ANB;
+    double SNGoGn;
+    double dist1NA;
+    double ang1NA;
+    double dist1NB;
+    double ang1NB;
+    int perfilTegumentar; /* 1=convexo suave, 2=reto, 3=convexo, 4=concavo */
+} MedidasOrtodonticas;
+
+typedef struct {
+    int CoACorrigido;
+    int coGnMin;
+    int coGnMax;
+    int afaiMin;
+    int afaiMax;
+
+    char classe[80];
+    char maxila[80];
+    char mandibula[80];
+    char crescimento[80];
+    char perfil[80];
+    char incisivoSupPos[80];
+    char incisivoSupAng[80];
+    char incisivoInfPos[80];
+    char incisivoInfAng[80];
+    char laudo[TAM_DIAGNOSTICO];
+} ResultadoOrtodontico;
+
+const TabelaMcNamara *buscarTabela(int coa);
+
+int calcularAnaliseOrtodontica(const char *nomePaciente,
+                               int idPaciente,
+                               const MedidasOrtodonticas *medidas,
+                               ResultadoOrtodontico *resultado);
 
 int lerOpcao(int min, int max);
 int lerIntMin(const char *prompt, int minVal);

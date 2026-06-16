@@ -315,7 +315,7 @@ static void ativar(GtkApplication *aplicacao, gpointer dados) {
     gtk_box_append(GTK_BOX(conteudo), grid);
 
     app->maxila = criar_combo(grid, "Maxila:", 0, opcoesMaxila, 3);
-    app->mmMaxila = criar_numero(grid, "Grau da maxila em mm:", 1, 0, 0, 99, 1, 0);
+    app->mmMaxila = criar_numero(grid, "Grau da maxila em mm:", 1, 0, 0, 50, 1, 0);
     gtk_widget_set_sensitive(app->mmMaxila, FALSE);
 
     app->perfil = criar_combo(grid, "Perfil tegumentar:", 2, opcoesPerfil, 4);

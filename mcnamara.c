@@ -441,10 +441,10 @@ void cadastrarPerfilOrtodontico(Paciente pacientes[], int qtdPacientes, int idPa
 
             if (tipoMaxila == 2) {
                 mmMaxila = lerIntMin("Grau de protrusao (mm): ", 1);
-                strcpy(strMaxila, "protruida");
+                sprintf(strMaxila, "protruida (%d mm)", mmMaxila);
             } else if (tipoMaxila == 3) {
                 mmMaxila = lerIntMin("Grau de retrusao (mm): ", 1);
-                strcpy(strMaxila, "retruida");
+                sprintf(strMaxila, "retruida (%d mm)", mmMaxila);
             } else {
                 strcpy(strMaxila, "bem posicionada");
             }
@@ -541,52 +541,27 @@ void cadastrarPerfilOrtodontico(Paciente pacientes[], int qtdPacientes, int idPa
             int anbAumentado = (ANB > 4.0);
             int anbDiminuido = (ANB < 1.0);
 
-            int afaiNormal = (AFAIReal >= ref->afaiMin && AFAIReal <= ref->afaiMax);
-            int afaiDiminuida = (AFAIReal < ref->afaiMin);
-            int afaiAumentada = (AFAIReal > ref->afaiMax);
-
-            int sngognNormal = (SNGoGn >= 29.0 && SNGoGn <= 35.0);
-            int sngognDiminuido = (SNGoGn < 29.0);
-            int sngognAumentado = (SNGoGn > 35.0);
-
-            int maxilaNormal = (tipoMaxila == 1);
-            int maxilaProtruida = (tipoMaxila == 2);
-            int maxilaRetruida = (tipoMaxila == 3);
-
-            int mandNormal = (CoGnReal >= ref->coGnMin && CoGnReal <= ref->coGnMax);
-            int mandReduzida = (CoGnReal < ref->coGnMin);
-            int mandAumentada = (CoGnReal > ref->coGnMax);
-
-            int mandMuitoReduzida = (CoGnReal < (ref->coGnMin - 6));
-            int mandMuitoAumentada = (CoGnReal > (ref->coGnMax + 6));
 
             int padraoIdentificado = 0;
 
-            if (afaiNormal && sngognNormal) {
-                if (anbNormal) {
-                    strcpy(strClasse, "I");
-                    padraoIdentificado = 1;
-                } else if (anbAumentado) {
-                    if ((maxilaNormal && mandReduzida) || (maxilaProtruida && mandNormal) ||
-                        (maxilaProtruida && mandReduzida) || (maxilaRetruida && mandMuitoReduzida)) {
-                        strcpy(strClasse, "II");
-                        padraoIdentificado = 1;
-                    }
-                } else if (anbDiminuido) {
-                    if ((maxilaRetruida && mandNormal) || (maxilaNormal && mandAumentada) ||
-                        (maxilaRetruida && mandAumentada) || (maxilaProtruida && mandMuitoAumentada)) {
-                        strcpy(strClasse, "III");
-                        padraoIdentificado = 1;
-                    }
-                }
-            } else if (afaiDiminuida && sngognDiminuido) {
-                if (anbNormal) { strcpy(strClasse, "I"); padraoIdentificado = 1; }
-                else if (anbAumentado) { strcpy(strClasse, "II"); padraoIdentificado = 1; }
-                else if (anbDiminuido) { strcpy(strClasse, "III"); padraoIdentificado = 1; }
-            } else if (afaiAumentada && sngognAumentado) {
-                if (anbNormal) { strcpy(strClasse, "I"); padraoIdentificado = 1; }
-                else if (anbAumentado) { strcpy(strClasse, "II"); padraoIdentificado = 1; }
-                else if (anbDiminuido) { strcpy(strClasse, "III"); padraoIdentificado = 1; }
+            /*
+             * A classificacao esqueletica final segue o ANB.
+             * AFAI e SN.GoGn descrevem o padrao vertical, mas nao impedem
+             * a definicao de Classe I, II ou III quando ha dados mistos.
+             *
+             * Tambem foi removido o antigo criterio de "muito reduzido"/
+             * "muito aumentado" com margem fixa de 6 mm, pois esse valor
+             * nao fazia parte do roteiro fornecido.
+             */
+            if (anbNormal) {
+                strcpy(strClasse, "I");
+                padraoIdentificado = 1;
+            } else if (anbAumentado) {
+                strcpy(strClasse, "II");
+                padraoIdentificado = 1;
+            } else if (anbDiminuido) {
+                strcpy(strClasse, "III");
+                padraoIdentificado = 1;
             }
 
             pacientes[i].perfilOrtodontico[0] = '\0';
@@ -851,11 +826,6 @@ int calcularAnaliseOrtodontica(const char *nomePaciente,
     char linha[700];
 
     int anbNormal, anbAumentado, anbDiminuido;
-    int afaiNormal, afaiDiminuida, afaiAumentada;
-    int sngognNormal, sngognDiminuido, sngognAumentado;
-    int maxilaNormal, maxilaProtruida, maxilaRetruida;
-    int mandNormal, mandReduzida, mandAumentada;
-    int mandMuitoReduzida, mandMuitoAumentada;
     int padraoIdentificado = 0;
 
     if (medidas == NULL || resultado == NULL) {
@@ -868,10 +838,10 @@ int calcularAnaliseOrtodontica(const char *nomePaciente,
 
     if (medidas->tipoMaxila == 2) {
         CoACorrigido = medidas->CoAOriginal - medidas->mmMaxila;
-        strcpy(resultado->maxila, "protruida");
+        sprintf(resultado->maxila, "protruida (%d mm)", medidas->mmMaxila);
     } else if (medidas->tipoMaxila == 3) {
         CoACorrigido = medidas->CoAOriginal + medidas->mmMaxila;
-        strcpy(resultado->maxila, "retruida");
+        sprintf(resultado->maxila, "retruida (%d mm)", medidas->mmMaxila);
     } else {
         strcpy(resultado->maxila, "bem posicionada");
     }
@@ -956,52 +926,25 @@ int calcularAnaliseOrtodontica(const char *nomePaciente,
     anbAumentado = (medidas->ANB > 4.0);
     anbDiminuido = (medidas->ANB < 1.0);
 
-    afaiNormal = (medidas->AFAIReal >= ref->afaiMin && medidas->AFAIReal <= ref->afaiMax);
-    afaiDiminuida = (medidas->AFAIReal < ref->afaiMin);
-    afaiAumentada = (medidas->AFAIReal > ref->afaiMax);
-
-    sngognNormal = (medidas->SNGoGn >= 29.0 && medidas->SNGoGn <= 35.0);
-    sngognDiminuido = (medidas->SNGoGn < 29.0);
-    sngognAumentado = (medidas->SNGoGn > 35.0);
-
-    maxilaNormal = (medidas->tipoMaxila == 1);
-    maxilaProtruida = (medidas->tipoMaxila == 2);
-    maxilaRetruida = (medidas->tipoMaxila == 3);
-
-    mandNormal = (medidas->CoGnReal >= ref->coGnMin && medidas->CoGnReal <= ref->coGnMax);
-    mandReduzida = (medidas->CoGnReal < ref->coGnMin);
-    mandAumentada = (medidas->CoGnReal > ref->coGnMax);
-
-    mandMuitoReduzida = (medidas->CoGnReal < (ref->coGnMin - 6));
-    mandMuitoAumentada = (medidas->CoGnReal > (ref->coGnMax + 6));
-
     strcpy(resultado->classe, "incomum");
 
-    if (afaiNormal && sngognNormal) {
-        if (anbNormal) {
-            strcpy(resultado->classe, "I");
-            padraoIdentificado = 1;
-        } else if (anbAumentado) {
-            if ((maxilaNormal && mandReduzida) || (maxilaProtruida && mandNormal) ||
-                (maxilaProtruida && mandReduzida) || (maxilaRetruida && mandMuitoReduzida)) {
-                strcpy(resultado->classe, "II");
-                padraoIdentificado = 1;
-            }
-        } else if (anbDiminuido) {
-            if ((maxilaRetruida && mandNormal) || (maxilaNormal && mandAumentada) ||
-                (maxilaRetruida && mandAumentada) || (maxilaProtruida && mandMuitoAumentada)) {
-                strcpy(resultado->classe, "III");
-                padraoIdentificado = 1;
-            }
-        }
-    } else if (afaiDiminuida && sngognDiminuido) {
-        if (anbNormal) { strcpy(resultado->classe, "I"); padraoIdentificado = 1; }
-        else if (anbAumentado) { strcpy(resultado->classe, "II"); padraoIdentificado = 1; }
-        else if (anbDiminuido) { strcpy(resultado->classe, "III"); padraoIdentificado = 1; }
-    } else if (afaiAumentada && sngognAumentado) {
-        if (anbNormal) { strcpy(resultado->classe, "I"); padraoIdentificado = 1; }
-        else if (anbAumentado) { strcpy(resultado->classe, "II"); padraoIdentificado = 1; }
-        else if (anbDiminuido) { strcpy(resultado->classe, "III"); padraoIdentificado = 1; }
+    /*
+     * A classificacao esqueletica final segue o ANB.
+     * AFAI e SN.GoGn descrevem o padrao vertical, inclusive quando forem
+     * mistos/indefinidos, mas nao bloqueiam a definicao de Classe I, II ou III.
+     *
+     * Foi removido o antigo criterio de "muito reduzido"/"muito aumentado"
+     * com margem fixa de 6 mm, pois esse valor nao estava documentado.
+     */
+    if (anbNormal) {
+        strcpy(resultado->classe, "I");
+        padraoIdentificado = 1;
+    } else if (anbAumentado) {
+        strcpy(resultado->classe, "II");
+        padraoIdentificado = 1;
+    } else if (anbDiminuido) {
+        strcpy(resultado->classe, "III");
+        padraoIdentificado = 1;
     }
 
     resultado->laudo[0] = '\0';

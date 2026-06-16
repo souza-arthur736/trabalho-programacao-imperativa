@@ -85,6 +85,8 @@ int lerIntMin(const char *prompt, int minVal);
 int lerIntRange(const char *prompt, int minVal, int maxVal);
 double lerDouble(const char *prompt);
 int senhaValida(char senha[]);
+int emailValido(const char *email);
+int nomeValido(const char *nome);
 
 void cadastrarDentista(Dentista dentistas[], int *qtdDentistas);
 int loginDentista(Dentista dentistas[], int qtdDentistas);

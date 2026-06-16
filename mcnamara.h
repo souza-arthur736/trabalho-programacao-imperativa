@@ -1,5 +1,5 @@
-#ifndef FUNCOES_H
-#define FUNCOES_H
+#ifndef MCNAMARA_H
+#define MCNAMARA_H
 
 #define MAX_DENTISTAS 10
 #define MAX_PACIENTES 100

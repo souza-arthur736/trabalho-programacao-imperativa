@@ -1,7 +1,7 @@
 # Trabalho de Programação Interativa
 
 <h2>Alunos:</h2>
-----------
+----------<br>
 Arthur de Souza Bezerra <br>
 Arthur Filipe Teodózio de Souza <br>
 Eduardo Emanuel Vila Nova Alves Nunes <br>

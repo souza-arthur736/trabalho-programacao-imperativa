@@ -7,8 +7,8 @@ Arthur Filipe Teodózio de Souza <br>
 Eduardo Emanuel Vila Nova Alves Nunes <br>
 Fábio Henrique Andrade de Santana <br>
 Gabriel de Oliveira Guedes <br> 
+--------------------------------------<br>
 
---------------------------------------
 # Sistema de Avaliação Ortodôntica (Diagnóstico Cefalométrico)
 
 Aplicação desktop em **C + GTK4** para dentistas cadastrarem pacientes,

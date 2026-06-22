@@ -13,7 +13,7 @@ Gabriel de Oliveira Guedes <br>
 
 Aplicação desktop em **C + GTK4** para dentistas cadastrarem pacientes,
 inserirem medidas cefalométricas e gerarem automaticamente um laudo de
-diagnóstico ortodôntico esquelético-facial, baseado nas regras de
+diagnóstico ortodôntico baseado nas regras de
 classificação de **McNamara** (maxila/mandíbula/AFAI) e na relação **ANB**
 (Classe I, II ou III esquelética).
 

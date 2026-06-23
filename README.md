@@ -29,7 +29,7 @@ classificação de **McNamara** (maxila/mandíbula/AFAI) e na relação **ANB**
 6. [Regras de negócio do diagnóstico](#regras-de-negócio-do-diagnóstico)
 7. [Persistência de dados (arquivos gerados)](#persistência-de-dados-arquivos-gerados)
 8. [Validações de formulário](#validações-de-formulário)
-9. [Decisões de design, desafios e limitações](#decisões-de-design,-desafios-e-limitações)
+9. [Decisões de design, desafios e limitações](#decisões-de-design-desafios-e-limitações)
 
 ---
 

@@ -31,24 +31,197 @@ typedef struct {
 
 typedef struct { Painel *p; int linha; } LinhaCtx;
 
-static void limpar_area(GtkWidget *box){ GtkWidget *f; while((f=gtk_widget_get_first_child(box))!=NULL) gtk_box_remove(GTK_BOX(box), f); }
-static GtkWidget *entry_grid(GtkWidget *g,const char*l,int r){ GtkWidget *lab=gtk_label_new(l),*e=gtk_entry_new(); gtk_widget_set_halign(lab,GTK_ALIGN_START); gtk_widget_set_hexpand(e,TRUE); gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); gtk_grid_attach(GTK_GRID(g),e,1,r,1,1); return e; }
-static void placeholder(GtkWidget *entry,const char *texto){ gtk_entry_set_placeholder_text(GTK_ENTRY(entry), texto); }
-static GtkWidget *spin_grid(GtkWidget*g,const char*l,int r,double v,double mn,double mx,double st,int casas){ GtkWidget *lab=gtk_label_new(l); GtkAdjustment *a=gtk_adjustment_new(v,mn,mx,st,st*10,0); GtkWidget*s=gtk_spin_button_new(a,st,casas); gtk_widget_set_halign(lab,GTK_ALIGN_START); gtk_widget_set_hexpand(s,TRUE); gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); gtk_grid_attach(GTK_GRID(g),s,1,r,1,1); return s; }
-static GtkWidget *combo_grid(GtkWidget*g,const char*l,int r,const char**ops,int n){ GtkWidget *lab=gtk_label_new(l),*c=gtk_combo_box_text_new(); int i; gtk_widget_set_halign(lab,GTK_ALIGN_START); for(i=0;i<n;i++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),ops[i]); gtk_combo_box_set_active(GTK_COMBO_BOX(c),0); gtk_widget_set_hexpand(c,TRUE); gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); gtk_grid_attach(GTK_GRID(g),c,1,r,1,1); return c; }
-static void textview_set(GtkWidget*v,const char*t){ GtkTextBuffer*b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(v)); gtk_text_buffer_set_text(b,t?t:"",-1); }
-static void aviso(Painel*p,const char*t){ GtkWidget*j=gtk_window_new(),*box=gtk_box_new(GTK_ORIENTATION_VERTICAL,12),*l=gtk_label_new(t),*bt=gtk_button_new_with_label("OK"); gtk_window_set_title(GTK_WINDOW(j),"Aviso"); gtk_window_set_default_size(GTK_WINDOW(j),420,140); if(p&&p->janela){gtk_window_set_transient_for(GTK_WINDOW(j),GTK_WINDOW(p->janela)); gtk_window_set_modal(GTK_WINDOW(j),TRUE);} gtk_widget_set_margin_top(box,18); gtk_widget_set_margin_bottom(box,18); gtk_widget_set_margin_start(box,18); gtk_widget_set_margin_end(box,18); gtk_label_set_wrap(GTK_LABEL(l),TRUE); gtk_box_append(GTK_BOX(box),l); gtk_box_append(GTK_BOX(box),bt); gtk_window_set_child(GTK_WINDOW(j),box); g_signal_connect_swapped(bt,"clicked",G_CALLBACK(gtk_window_destroy),j); gtk_window_present(GTK_WINDOW(j)); }
-static void filtro_nome(GtkEditable*e,gpointer d){ filtrar_entry(GTK_WIDGET(e)," '-",1,0); }
-static void filtro_num(GtkEditable*e,gpointer d){ filtrar_entry(GTK_WIDGET(e),".-/()+ ",0,1); }
-static void filtro_data(GtkEditable*e,gpointer d){ filtrar_entry(GTK_WIDGET(e),"/",0,1); }
+static void limpar_area(GtkWidget *box)
+{ 
+    GtkWidget *f;
+    while((f=gtk_widget_get_first_child(box))!=NULL) 
+        gtk_box_remove(GTK_BOX(box), f); 
+}
+static GtkWidget *entry_grid(GtkWidget *g,const char*l,int r)
+{ 
+    GtkWidget *lab=gtk_label_new(l),*e=gtk_entry_new(); 
+    gtk_widget_set_halign(lab,GTK_ALIGN_START); 
+    gtk_widget_set_hexpand(e,TRUE); 
+    gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); 
+    gtk_grid_attach(GTK_GRID(g),e,1,r,1,1); 
+    return e; 
+}
+static void placeholder(GtkWidget *entry,const char *texto)
+{ 
+    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), texto);
+}
+static GtkWidget *spin_grid(GtkWidget*g,const char*l,int r,double v,double mn,double mx,double st,int casas)
+{ 
+    GtkWidget *lab=gtk_label_new(l); GtkAdjustment *a=gtk_adjustment_new(v,mn,mx,st,st*10,0); 
+    GtkWidget*s=gtk_spin_button_new(a,st,casas); 
+    gtk_widget_set_halign(lab,GTK_ALIGN_START); 
+    gtk_widget_set_hexpand(s,TRUE); 
+    gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); 
+    gtk_grid_attach(GTK_GRID(g),s,1,r,1,1); 
+    return s; 
+}
+static GtkWidget *combo_grid(GtkWidget*g,const char*l,int r,const char**ops,int n)
+{ 
+    GtkWidget *lab=gtk_label_new(l),*c=gtk_combo_box_text_new(); 
+    int i; 
+    gtk_widget_set_halign(lab,GTK_ALIGN_START); 
+    for(i=0;i<n;i++) gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(c),ops[i]); 
+    gtk_combo_box_set_active(GTK_COMBO_BOX(c),0); 
+    gtk_widget_set_hexpand(c,TRUE); 
+    gtk_grid_attach(GTK_GRID(g),lab,0,r,1,1); 
+    gtk_grid_attach(GTK_GRID(g),c,1,r,1,1); 
+    return c; 
+}
+static void textview_set(GtkWidget*v,const char*t)
+{ 
+    GtkTextBuffer*b=gtk_text_view_get_buffer(GTK_TEXT_VIEW(v)); 
+    gtk_text_buffer_set_text(b,t?t:"",-1); 
+}
+static void aviso(Painel*p,const char*t)
+{ 
+    GtkWidget*j=gtk_window_new(),*box=gtk_box_new(GTK_ORIENTATION_VERTICAL,12),*l=gtk_label_new(t),*bt=gtk_button_new_with_label("OK"); 
+    gtk_window_set_title(GTK_WINDOW(j),"Aviso"); 
+    gtk_window_set_default_size(GTK_WINDOW(j),420,140); 
+    if(p&&p->janela)
+    {
+        gtk_window_set_transient_for(GTK_WINDOW(j),GTK_WINDOW(p->janela)); 
+        gtk_window_set_modal(GTK_WINDOW(j),TRUE);
+    } 
+    gtk_widget_set_margin_top(box,18); 
+    gtk_widget_set_margin_bottom(box,18); 
+    gtk_widget_set_margin_start(box,18); 
+    gtk_widget_set_margin_end(box,18); 
+    gtk_label_set_wrap(GTK_LABEL(l),TRUE); 
+    gtk_box_append(GTK_BOX(box),l); 
+    gtk_box_append(GTK_BOX(box),bt); 
+    gtk_window_set_child(GTK_WINDOW(j),box); 
+    g_signal_connect_swapped(bt,"clicked",G_CALLBACK(gtk_window_destroy),j); 
+    gtk_window_present(GTK_WINDOW(j)); 
+}
+static void filtro_nome(GtkEditable*e,gpointer d)
+{
+    filtrar_entry(GTK_WIDGET(e)," '-",1,0); 
+}
+static void filtro_num(GtkEditable*e,gpointer d)
+{ 
+    filtrar_entry(GTK_WIDGET(e),".-/()+ ",0,1); 
+}
+static void filtro_data(GtkEditable*e,gpointer d)
+{ 
+    filtrar_entry(GTK_WIDGET(e),"/",0,1); 
+}
 
-static void csvcpy(char*d,size_t n,const char*s){ snprintf(d,n,"%s",s?s:""); limpar_csv(d); }
-static int separar(char*linha,char*t[],int max){ int n=0; char*ini=linha; linha[strcspn(linha,"\r\n")]='\0'; while(n<max){ char*sep=strchr(ini,';'); t[n++]=ini; if(!sep)break; *sep='\0'; ini=sep+1;} return n; }
-static int ler_perfil_linha(char*linha,int num,PerfilPaciente*p){ char*t[12]; int n=separar(linha,t,12); if(n<9)return 0; memset(p,0,sizeof* p); p->linhaArquivo=num; csvcpy(p->dentistaEmail,sizeof p->dentistaEmail,t[0]); csvcpy(p->nome,sizeof p->nome,t[1]); p->idade=atoi(t[2]); csvcpy(p->cpf,sizeof p->cpf,t[3]); csvcpy(p->telefone,sizeof p->telefone,t[4]); csvcpy(p->email,sizeof p->email,t[5]); csvcpy(p->endereco,sizeof p->endereco,t[6]); csvcpy(p->dataNascimento,sizeof p->dataNascimento,t[7]); csvcpy(p->observacoes,sizeof p->observacoes,t[8]); return 1; }
-static void escrever_perfil(FILE*f,PerfilPaciente p){ limpar_csv(p.dentistaEmail); limpar_csv(p.nome); limpar_csv(p.cpf); limpar_csv(p.telefone); limpar_csv(p.email); limpar_csv(p.endereco); limpar_csv(p.dataNascimento); limpar_csv(p.observacoes); fprintf(f,"%s;%s;%d;%s;%s;%s;%s;%s;%s\n",p.dentistaEmail,p.nome,p.idade,p.cpf,p.telefone,p.email,p.endereco,p.dataNascimento,p.observacoes); }
-static int carregar_perfil_por_linha(int linha,PerfilPaciente*p){ FILE*f=fopen(ARQ_PERFIS,"r"); char buf[2000]; int n=0; if(!f)return 0; while(fgets(buf,sizeof buf,f)){ if(n==linha){int ok=ler_perfil_linha(buf,n,p); fclose(f); return ok;} n++; } fclose(f); return 0; }
-static int salvar_perfil(PerfilPaciente*p){ FILE*f=fopen(ARQ_PERFIS,"a"); if(!f)return 0; escrever_perfil(f,*p); fclose(f); return 1; }
-static int atualizar_perfil(int linha,PerfilPaciente*p){ FILE*in=fopen(ARQ_PERFIS,"r"),*out=fopen("pacientes_cadastrados.tmp","w"); char buf[2000]; int n=0,ok=0; if(!in||!out){ if(in)fclose(in); if(out)fclose(out); return 0;} while(fgets(buf,sizeof buf,in)){ if(n==linha){ escrever_perfil(out,*p); ok=1;} else fputs(buf,out); n++; } fclose(in); fclose(out); if(!ok){remove("pacientes_cadastrados.tmp"); return 0;} remove(ARQ_PERFIS); rename("pacientes_cadastrados.tmp",ARQ_PERFIS); return 1; }
+static void csvcpy(char*d,size_t n,const char*s)
+{ 
+    snprintf(d,n,"%s",s?s:""); 
+    limpar_csv(d); 
+}
+static int separar(char*linha,char*t[],int max)
+{ 
+    int n=0; 
+    char*ini=linha; 
+    linha[strcspn(linha,"\r\n")]='\0'; 
+    while(n<max)
+    { 
+        char*sep=strchr(ini,';'); 
+        t[n++]=ini; 
+        if(!sep)break; 
+        *sep='\0'; 
+        ini=sep+1;
+    } 
+    return n; 
+}
+static int ler_perfil_linha(char*linha,int num,PerfilPaciente*p)
+{ 
+    char*t[12]; 
+    int n=separar(linha,t,12); 
+    if(n<9)return 0; 
+    memset(p,0,sizeof* p); 
+    p->linhaArquivo=num; 
+    csvcpy(p->dentistaEmail,sizeof p->dentistaEmail,t[0]); 
+    csvcpy(p->nome,sizeof p->nome,t[1]); 
+    p->idade=atoi(t[2]); 
+    csvcpy(p->cpf,sizeof p->cpf,t[3]); 
+    csvcpy(p->telefone,sizeof p->telefone,t[4]); 
+    csvcpy(p->email,sizeof p->email,t[5]); 
+    csvcpy(p->endereco,sizeof p->endereco,t[6]); 
+    csvcpy(p->dataNascimento,sizeof p->dataNascimento,t[7]); 
+    csvcpy(p->observacoes,sizeof p->observacoes,t[8]); 
+    return 1; 
+}
+static void escrever_perfil(FILE*f,PerfilPaciente p)
+{ 
+    limpar_csv(p.dentistaEmail); 
+    limpar_csv(p.nome); 
+    limpar_csv(p.cpf); 
+    limpar_csv(p.telefone); 
+    limpar_csv(p.email); 
+    limpar_csv(p.endereco); 
+    limpar_csv(p.dataNascimento); 
+    limpar_csv(p.observacoes); 
+    fprintf(f,"%s;%s;%d;%s;%s;%s;%s;%s;%s\n",p.dentistaEmail,p.nome,p.idade,p.cpf,p.telefone,p.email,p.endereco,p.dataNascimento,p.observacoes); 
+}
+static int carregar_perfil_por_linha(int linha,PerfilPaciente*p)
+{ 
+    FILE*f=fopen(ARQ_PERFIS,"r"); 
+    char buf[2000]; 
+    int n=0; 
+    if(!f)return 0; 
+    while(fgets(buf,sizeof buf,f))
+    { 
+        if(n==linha)
+        {
+            int ok=ler_perfil_linha(buf,n,p); 
+            fclose(f); 
+            return ok;
+        } 
+        n++; 
+    } 
+    fclose(f); 
+    return 0; 
+}
+
+
+static int salvar_perfil(PerfilPaciente*p)
+{ 
+    FILE*f=fopen(ARQ_PERFIS,"a"); 
+    if(!f)return 0; 
+    escrever_perfil(f,*p); 
+    fclose(f); 
+    return 1; 
+}
+static int atualizar_perfil(int linha,PerfilPaciente*p)
+{ 
+    FILE*in=fopen(ARQ_PERFIS,"r"),*out=fopen("pacientes_cadastrados.tmp","w"); 
+    char buf[2000];
+    int n=0,ok=0; 
+    if(!in||!out)
+    { 
+        if(in)fclose(in); 
+        if(out)fclose(out); 
+        return 0;
+    } 
+    while(fgets(buf,sizeof buf,in))
+    { 
+        if(n==linha)
+        { 
+            escrever_perfil(out,*p); 
+            ok=1;
+        } 
+        else fputs(buf,out); 
+        n++; 
+    } 
+    fclose(in); 
+    fclose(out); 
+    if(!ok)
+    {
+        remove("pacientes_cadastrados.tmp"); 
+        return 0;
+    } 
+    remove(ARQ_PERFIS); 
+    rename("pacientes_cadastrados.tmp",ARQ_PERFIS); 
+    return 1; 
+}
 
 static void tela_inicial(Painel*p);
 static void tela_menu_paciente(Painel*p);
@@ -56,46 +229,686 @@ static void tela_form_perfil(Painel*p,int novo);
 static void tela_diagnostico(Painel*p);
 static void tela_historico(Painel*p);
 
-static void carregar_lista_pacientes(Painel*p){ FILE*f=fopen(ARQ_PERFIS,"r"); char linha[2000]; int num=0,achou=0; GtkWidget*filho; while((filho=gtk_widget_get_first_child(p->listaPacientes))!=NULL) gtk_list_box_remove(GTK_LIST_BOX(p->listaPacientes),filho); if(f){ while(fgets(linha,sizeof linha,f)){ PerfilPaciente pp; if(ler_perfil_linha(linha,num,&pp)&&strcmp(pp.dentistaEmail,p->dentista.email)==0){ GtkWidget*row=gtk_list_box_row_new(),*lab=gtk_label_new(pp.nome); gtk_widget_set_halign(lab,GTK_ALIGN_START); gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),lab); g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(num)); gtk_list_box_append(GTK_LIST_BOX(p->listaPacientes),row); achou=1;} num++; } fclose(f);} if(!achou){ GtkWidget*row=gtk_list_box_row_new(); gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),gtk_label_new("Nenhum paciente cadastrado.")); g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(-1)); gtk_list_box_append(GTK_LIST_BOX(p->listaPacientes),row);} }
-static void ao_ativar_paciente(GtkListBox*b,GtkListBoxRow*r,gpointer dados){ Painel*p=dados; int linha=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(r),"linha")); if(linha<0)return; if(carregar_perfil_por_linha(linha,&p->pacienteAtual)){ p->temPacienteAtual=1; p->linhaDiagEdicao=-1; tela_menu_paciente(p);} }
-static void ao_novo_paciente(GtkButton*b,gpointer dados){ Painel*p=dados; memset(&p->pacienteAtual,0,sizeof p->pacienteAtual); p->temPacienteAtual=0; tela_form_perfil(p,1); }
+static void carregar_lista_pacientes(Painel*p)
+{ 
+    FILE*f=fopen(ARQ_PERFIS,"r"); 
+    char linha[2000]; 
+    int num=0,achou=0; 
+    GtkWidget*filho; 
+    while((filho=gtk_widget_get_first_child(p->listaPacientes))!=NULL) gtk_list_box_remove(GTK_LIST_BOX(p->listaPacientes),filho); 
+    if(f)
+    { 
+        while(fgets(linha,sizeof linha,f))
+        { 
+            PerfilPaciente pp; 
+            if(ler_perfil_linha(linha,num,&pp)&&strcmp(pp.dentistaEmail,p->dentista.email)==0)
+            { 
+                GtkWidget*row=gtk_list_box_row_new(),*lab=gtk_label_new(pp.nome); 
+                gtk_widget_set_halign(lab,GTK_ALIGN_START); 
+                gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),lab); 
+                g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(num)); 
+                gtk_list_box_append(GTK_LIST_BOX(p->listaPacientes),row); 
+                achou=1;
+            } 
+            num++; 
+        } 
+        fclose(f);
+    } 
+    if(!achou)
+    { 
+        GtkWidget*row=gtk_list_box_row_new(); 
+        gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),gtk_label_new("Nenhum paciente cadastrado.")); 
+        g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(-1)); 
+        gtk_list_box_append(GTK_LIST_BOX(p->listaPacientes),row);
+    } 
+}
 
-static int validar_perfil_entries(Painel*p){ const char*nome=gtk_editable_get_text(GTK_EDITABLE(p->nome)); const char*cpf=gtk_editable_get_text(GTK_EDITABLE(p->cpf)); const char*tel=gtk_editable_get_text(GTK_EDITABLE(p->telefone)); const char*em=gtk_editable_get_text(GTK_EDITABLE(p->email)); const char*dn=gtk_editable_get_text(GTK_EDITABLE(p->dataNascimento)); if(!nomeValido(nome)){aviso(p,"Nome invalido: use apenas letras.");return 0;} if(strlen(cpf)&&!cpfValidoSimples(cpf)){aviso(p,"CPF invalido: use apenas numeros, ponto e hifen.");return 0;} if(strlen(tel)&&!telefoneValidoSimples(tel)){aviso(p,"Telefone invalido: use apenas numeros e sinais.");return 0;} if(strlen(em)&&!emailValido(em)){aviso(p,"Email invalido.");return 0;} if(!dataValidaSimples(dn)){aviso(p,"Data de nascimento obrigatoria e invalida. Use o formato 01/01/2020.");return 0;} return 1; }
-static void ler_entries_perfil(Painel*p,PerfilPaciente*pp){ memset(pp,0,sizeof*pp); snprintf(pp->dentistaEmail,sizeof pp->dentistaEmail,"%s",p->dentista.email); snprintf(pp->nome,sizeof pp->nome,"%s",gtk_editable_get_text(GTK_EDITABLE(p->nome))); pp->idade=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->idade)); snprintf(pp->cpf,sizeof pp->cpf,"%s",gtk_editable_get_text(GTK_EDITABLE(p->cpf))); snprintf(pp->telefone,sizeof pp->telefone,"%s",gtk_editable_get_text(GTK_EDITABLE(p->telefone))); snprintf(pp->email,sizeof pp->email,"%s",gtk_editable_get_text(GTK_EDITABLE(p->email))); snprintf(pp->endereco,sizeof pp->endereco,"%s",gtk_editable_get_text(GTK_EDITABLE(p->endereco))); snprintf(pp->dataNascimento,sizeof pp->dataNascimento,"%s",gtk_editable_get_text(GTK_EDITABLE(p->dataNascimento))); snprintf(pp->observacoes,sizeof pp->observacoes,"%s",gtk_editable_get_text(GTK_EDITABLE(p->observacoes))); }
-static void ao_salvar_perfil_paciente(GtkButton*b,gpointer dados){ LinhaCtx*ctx=dados; Painel*p=ctx->p; PerfilPaciente pp; if(!validar_perfil_entries(p))return; ler_entries_perfil(p,&pp); if(ctx->linha<0){ if(!salvar_perfil(&pp)){aviso(p,"Erro ao salvar paciente.");return;} } else { pp.linhaArquivo=ctx->linha; if(!atualizar_perfil(ctx->linha,&pp)){aviso(p,"Erro ao atualizar paciente.");return;} } carregar_lista_pacientes(p); p->pacienteAtual=pp; if(ctx->linha>=0)p->pacienteAtual.linhaArquivo=ctx->linha; p->temPacienteAtual=1; tela_menu_paciente(p); }
 
-static void tela_inicial(Painel*p){ limpar_area(p->area); gtk_box_append(GTK_BOX(p->area),gtk_label_new("Selecione um paciente na lista ou clique no + para cadastrar.")); }
+static void ao_ativar_paciente(GtkListBox*b,GtkListBoxRow*r,gpointer dados)
+{ 
+    Painel*p=dados; 
+    int linha=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(r),"linha")); 
+    if(linha<0)return; 
+    if(carregar_perfil_por_linha(linha,&p->pacienteAtual))
+    { 
+        p->temPacienteAtual=1; 
+        p->linhaDiagEdicao=-1; 
+        tela_menu_paciente(p);
+    } 
+}
+static void ao_novo_paciente(GtkButton*b,gpointer dados)
+{ 
+    Painel*p=dados;
+    memset(&p->pacienteAtual,0,sizeof p->pacienteAtual); 
+    p->temPacienteAtual=0; 
+    tela_form_perfil(p,1); 
+}
+
+static int validar_perfil_entries(Painel*p)
+{ 
+    const char*nome=gtk_editable_get_text(GTK_EDITABLE(p->nome)); 
+    const char*cpf=gtk_editable_get_text(GTK_EDITABLE(p->cpf)); 
+    const char*tel=gtk_editable_get_text(GTK_EDITABLE(p->telefone)); 
+    const char*em=gtk_editable_get_text(GTK_EDITABLE(p->email)); 
+    const char*dn=gtk_editable_get_text(GTK_EDITABLE(p->dataNascimento)); 
+    if(!nomeValido(nome))
+    {
+        aviso(p,"Nome invalido: use apenas letras.");
+        return 0;
+    } 
+    if(strlen(cpf)&&!cpfValidoSimples(cpf))
+    {
+        aviso(p,"CPF invalido: use apenas numeros, ponto e hifen.");
+        return 0;
+    } 
+    if(strlen(tel)&&!telefoneValidoSimples(tel))
+    {
+        aviso(p,"Telefone invalido: use apenas numeros e sinais.");
+        return 0;
+    } 
+    if(strlen(em)&&!emailValido(em))
+    {
+        aviso(p,"Email invalido.");
+        return 0;
+    } 
+    if(!dataValidaSimples(dn))
+    {
+        aviso(p,"Data de nascimento obrigatoria e invalida. Use o formato 01/01/2020.");
+        return 0;
+    } 
+    return 1; 
+}
+
+
+static void ler_entries_perfil(Painel*p,PerfilPaciente*pp)
+{ 
+    memset(pp,0,sizeof*pp); 
+    snprintf(pp->dentistaEmail,sizeof pp->dentistaEmail,"%s",p->dentista.email); 
+    snprintf(pp->nome,sizeof pp->nome,"%s",gtk_editable_get_text(GTK_EDITABLE(p->nome))); 
+    pp->idade=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->idade)); 
+    snprintf(pp->cpf,sizeof pp->cpf,"%s",gtk_editable_get_text(GTK_EDITABLE(p->cpf))); 
+    snprintf(pp->telefone,sizeof pp->telefone,"%s",gtk_editable_get_text(GTK_EDITABLE(p->telefone))); 
+    snprintf(pp->email,sizeof pp->email,"%s",gtk_editable_get_text(GTK_EDITABLE(p->email))); 
+    snprintf(pp->endereco,sizeof pp->endereco,"%s",gtk_editable_get_text(GTK_EDITABLE(p->endereco))); 
+    snprintf(pp->dataNascimento,sizeof pp->dataNascimento,"%s",gtk_editable_get_text(GTK_EDITABLE(p->dataNascimento))); 
+    snprintf(pp->observacoes,sizeof pp->observacoes,"%s",gtk_editable_get_text(GTK_EDITABLE(p->observacoes))); 
+}
+
+
+static void ao_salvar_perfil_paciente(GtkButton*b,gpointer dados)
+{ 
+    LinhaCtx*ctx=dados; 
+    Painel*p=ctx->p; 
+    PerfilPaciente pp; 
+    if(!validar_perfil_entries(p))return;
+    ler_entries_perfil(p,&pp); 
+    if(ctx->linha<0)
+    { 
+        if(!salvar_perfil(&pp))
+        {
+            aviso(p,"Erro ao salvar paciente.");
+            return;
+        } 
+    } 
+    else 
+    { 
+        pp.linhaArquivo=ctx->linha; 
+        if(!atualizar_perfil(ctx->linha,&pp))
+        {
+            aviso(p,"Erro ao atualizar paciente.");
+            return;
+        } 
+    } 
+    carregar_lista_pacientes(p); 
+    p->pacienteAtual=pp; 
+    if(ctx->linha>=0)p->pacienteAtual.linhaArquivo=ctx->linha; 
+    p->temPacienteAtual=1; 
+    tela_menu_paciente(p); 
+}
+
+static void tela_inicial(Painel*p)
+{ 
+    limpar_area(p->area); 
+    gtk_box_append(GTK_BOX(p->area),gtk_label_new("Selecione um paciente na lista ou clique no + para cadastrar.")); 
+}
+
+//Botoes
 static void ao_ver_perfil(GtkButton*b,gpointer dados){ tela_form_perfil((Painel*)dados,0); }
 static void ao_ir_diagnostico(GtkButton*b,gpointer dados){ tela_diagnostico((Painel*)dados); }
 static void ao_ir_historico(GtkButton*b,gpointer dados){ tela_historico((Painel*)dados); }
-static void tela_menu_paciente(Painel*p){ limpar_area(p->area); char tit[300]; snprintf(tit,sizeof tit,"Paciente selecionado: %s",p->pacienteAtual.nome); GtkWidget*l=gtk_label_new(tit),*b1=gtk_button_new_with_label("Visualizar perfil"),*b2=gtk_button_new_with_label("Realizar diagnostico"),*b3=gtk_button_new_with_label("Ver historico de diagnosticos"); gtk_widget_set_halign(l,GTK_ALIGN_START); gtk_box_append(GTK_BOX(p->area),l); gtk_box_append(GTK_BOX(p->area),b1); gtk_box_append(GTK_BOX(p->area),b2); gtk_box_append(GTK_BOX(p->area),b3); g_signal_connect(b1,"clicked",G_CALLBACK(ao_ver_perfil),p); g_signal_connect(b2,"clicked",G_CALLBACK(ao_ir_diagnostico),p); g_signal_connect(b3,"clicked",G_CALLBACK(ao_ir_historico),p); }
-static void ao_voltar_menu(GtkButton*b,gpointer dados){ tela_menu_paciente((Painel*)dados); }
 
-static void tela_form_perfil(Painel*p,int novo){ limpar_area(p->area); gtk_box_append(GTK_BOX(p->area),gtk_label_new(novo?"Cadastrar novo paciente":"Perfil do paciente")); GtkWidget*g=gtk_grid_new(); gtk_grid_set_row_spacing(GTK_GRID(g),8); gtk_grid_set_column_spacing(GTK_GRID(g),10); gtk_box_append(GTK_BOX(p->area),g); p->nome=entry_grid(g,"Nome:",0); p->idade=spin_grid(g,"Idade:",1,18,0,120,1,0); p->cpf=entry_grid(g,"CPF:",2); p->telefone=entry_grid(g,"Telefone:",3); p->email=entry_grid(g,"Email:",4); p->endereco=entry_grid(g,"Endereco:",5); p->dataNascimento=entry_grid(g,"Data nascimento:",6); p->observacoes=entry_grid(g,"Observacoes:",7); placeholder(p->cpf,"123.456.789-00"); placeholder(p->telefone,"81912345678"); placeholder(p->email,"conta@gmail.com"); placeholder(p->dataNascimento,"01/01/2000"); g_signal_connect(p->nome,"changed",G_CALLBACK(filtro_nome),NULL); g_signal_connect(p->cpf,"changed",G_CALLBACK(filtro_num),NULL); g_signal_connect(p->telefone,"changed",G_CALLBACK(filtro_num),NULL); g_signal_connect(p->dataNascimento,"changed",G_CALLBACK(filtro_data),NULL); if(!novo&&p->temPacienteAtual){ PerfilPaciente*pp=&p->pacienteAtual; gtk_editable_set_text(GTK_EDITABLE(p->nome),pp->nome); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->idade),pp->idade); gtk_editable_set_text(GTK_EDITABLE(p->cpf),pp->cpf); gtk_editable_set_text(GTK_EDITABLE(p->telefone),pp->telefone); gtk_editable_set_text(GTK_EDITABLE(p->email),pp->email); gtk_editable_set_text(GTK_EDITABLE(p->endereco),pp->endereco); gtk_editable_set_text(GTK_EDITABLE(p->dataNascimento),pp->dataNascimento); gtk_editable_set_text(GTK_EDITABLE(p->observacoes),pp->observacoes); }
-    GtkWidget*bt=gtk_button_new_with_label(novo?"Cadastrar paciente":"Alterar dados do paciente"); LinhaCtx*ctx=g_new0(LinhaCtx,1); ctx->p=p; ctx->linha=novo?-1:p->pacienteAtual.linhaArquivo; gtk_box_append(GTK_BOX(p->area),bt); g_signal_connect(bt,"clicked",G_CALLBACK(ao_salvar_perfil_paciente),ctx); if(!novo){ GtkWidget*voltar=gtk_button_new_with_label("Voltar"); gtk_box_append(GTK_BOX(p->area),voltar); g_signal_connect(voltar,"clicked",G_CALLBACK(ao_voltar_menu),p);} }
+static void tela_menu_paciente(Painel*p) { 
+    limpar_area(p->area); 
+    char tit[300]; 
+    snprintf(tit, sizeof tit, "Paciente selecionado: %s", p->pacienteAtual.nome); 
+    
+    GtkWidget* l = gtk_label_new(tit);
+    GtkWidget* b1 = gtk_button_new_with_label("Visualizar perfil");
+    GtkWidget* b2 = gtk_button_new_with_label("Realizar diagnostico");
+    GtkWidget* b3 = gtk_button_new_with_label("Ver historico de diagnosticos"); 
+    
+    gtk_widget_set_halign(l, GTK_ALIGN_START); 
+    gtk_box_append(GTK_BOX(p->area), l); 
+    gtk_box_append(GTK_BOX(p->area), b1); 
+    gtk_box_append(GTK_BOX(p->area), b2); 
+    gtk_box_append(GTK_BOX(p->area), b3); 
+    
+    g_signal_connect(b1, "clicked", G_CALLBACK(ao_ver_perfil), p); 
+    g_signal_connect(b2, "clicked", G_CALLBACK(ao_ir_diagnostico), p); 
+    g_signal_connect(b3, "clicked", G_CALLBACK(ao_ir_historico), p); 
+}
 
-static void ao_mudar_maxila(GtkComboBox*c,gpointer dados){ Painel*p=dados; int a=gtk_combo_box_get_active(c); gtk_widget_set_sensitive(p->mmMaxila,a!=0); if(a==0)gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->mmMaxila),0); }
-static void abrir_laudo_calculado(Painel*p,const char*laudo){ GtkWidget*j=gtk_application_window_new(p->app),*box=gtk_box_new(GTK_ORIENTATION_VERTICAL,10),*view=gtk_text_view_new(),*scr=gtk_scrolled_window_new(),*bt=gtk_button_new_with_label("Fechar"); gtk_window_set_title(GTK_WINDOW(j),"Resultado do diagnostico"); gtk_window_set_default_size(GTK_WINDOW(j),780,640); gtk_widget_set_margin_top(box,12); gtk_widget_set_margin_bottom(box,12); gtk_widget_set_margin_start(box,12); gtk_widget_set_margin_end(box,12); gtk_window_set_child(GTK_WINDOW(j),box); gtk_text_view_set_editable(GTK_TEXT_VIEW(view),FALSE); gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(view),GTK_WRAP_WORD); textview_set(view,laudo); gtk_widget_set_vexpand(scr,TRUE); gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr),view); gtk_box_append(GTK_BOX(box),scr); gtk_box_append(GTK_BOX(box),bt); g_signal_connect_swapped(bt,"clicked",G_CALLBACK(gtk_window_destroy),j); gtk_window_present(GTK_WINDOW(j)); }
-static int calcular_diag(Painel*p,int abrir){ MedidasOrtodonticas m; ResultadoOrtodontico r; const char*data=gtk_editable_get_text(GTK_EDITABLE(p->dataExame)); if(strlen(data)&&!dataValidaSimples(data)){aviso(p,"Data do exame invalida. Use o formato 01/01/2020.");return 0;} m.tipoMaxila=gtk_combo_box_get_active(GTK_COMBO_BOX(p->maxila))+1; m.mmMaxila=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->mmMaxila)); m.perfilTegumentar=gtk_combo_box_get_active(GTK_COMBO_BOX(p->perfil))+1; m.CoAOriginal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->coa)); m.CoGnReal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->cogn)); m.AFAIReal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->afai)); m.ANB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->anb)); m.SNGoGn=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->sngogn)); m.dist1NA=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1na)); m.ang1NA=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1na)); m.dist1NB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1nb)); m.ang1NB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1nb)); if(!calcularAnaliseOrtodontica(p->pacienteAtual.nome,0,&m,&r)){ snprintf(p->ultimoLaudo,sizeof p->ultimoLaudo,"%s",r.laudo); abrir_laudo_calculado(p,p->ultimoLaudo); return 0;} snprintf(p->ultimoLaudo,sizeof p->ultimoLaudo,"%s",r.laudo); snprintf(p->ultimaClasse,sizeof p->ultimaClasse,"%s",r.classe); snprintf(p->ultimaMaxila,sizeof p->ultimaMaxila,"%s",r.maxila); snprintf(p->ultimaMandibula,sizeof p->ultimaMandibula,"%s",r.mandibula); snprintf(p->ultimoCrescimento,sizeof p->ultimoCrescimento,"%s",r.crescimento); snprintf(p->ultimoPerfil,sizeof p->ultimoPerfil,"%s",r.perfil); if(abrir) abrir_laudo_calculado(p,p->ultimoLaudo); return 1; }
-static void montar_diag(Painel*p,Paciente*pac){ memset(pac,0,sizeof*pac); snprintf(pac->dentistaEmail,sizeof pac->dentistaEmail,"%s",p->dentista.email); snprintf(pac->dentistaNome,sizeof pac->dentistaNome,"%s",p->dentista.nome); snprintf(pac->nome,sizeof pac->nome,"%s",p->pacienteAtual.nome); pac->idade=p->pacienteAtual.idade; snprintf(pac->cpf,sizeof pac->cpf,"%s",p->pacienteAtual.cpf); snprintf(pac->telefone,sizeof pac->telefone,"%s",p->pacienteAtual.telefone); snprintf(pac->email,sizeof pac->email,"%s",p->pacienteAtual.email); snprintf(pac->endereco,sizeof pac->endereco,"%s",p->pacienteAtual.endereco); snprintf(pac->dataNascimento,sizeof pac->dataNascimento,"%s",p->pacienteAtual.dataNascimento); snprintf(pac->observacoes,sizeof pac->observacoes,"%s",p->pacienteAtual.observacoes); snprintf(pac->dataExame,sizeof pac->dataExame,"%s",gtk_editable_get_text(GTK_EDITABLE(p->dataExame))); if(!strlen(pac->dataExame))snprintf(pac->dataExame,sizeof pac->dataExame,"sem data"); pac->medidas.tipoMaxila=gtk_combo_box_get_active(GTK_COMBO_BOX(p->maxila))+1; pac->medidas.mmMaxila=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->mmMaxila)); pac->medidas.perfilTegumentar=gtk_combo_box_get_active(GTK_COMBO_BOX(p->perfil))+1; pac->medidas.CoAOriginal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->coa)); pac->medidas.CoGnReal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->cogn)); pac->medidas.AFAIReal=gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->afai)); pac->medidas.ANB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->anb)); pac->medidas.SNGoGn=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->sngogn)); pac->medidas.dist1NA=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1na)); pac->medidas.ang1NA=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1na)); pac->medidas.dist1NB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1nb)); pac->medidas.ang1NB=gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1nb)); snprintf(pac->classe,sizeof pac->classe,"%s",p->ultimaClasse); snprintf(pac->maxila,sizeof pac->maxila,"%s",p->ultimaMaxila); snprintf(pac->mandibula,sizeof pac->mandibula,"%s",p->ultimaMandibula); snprintf(pac->crescimento,sizeof pac->crescimento,"%s",p->ultimoCrescimento); snprintf(pac->perfil,sizeof pac->perfil,"%s",p->ultimoPerfil); snprintf(pac->laudo,sizeof pac->laudo,"%s",p->ultimoLaudo); }
-static void ao_calc(GtkButton*b,gpointer dados){ calcular_diag((Painel*)dados,1); }
-static void ao_salvar_diag(GtkButton*b,gpointer dados){ Painel*p=dados; Paciente pac; char erro[200]; if(!calcular_diag(p,0))return; montar_diag(p,&pac); if(p->linhaDiagEdicao>=0){ if(!atualizar_paciente_linha(p->linhaDiagEdicao,&pac,erro,sizeof erro)){aviso(p,erro);return;} gtk_label_set_text(GTK_LABEL(p->status),"Diagnostico atualizado."); } else { if(!salvar_paciente(&pac,erro,sizeof erro)){aviso(p,erro);return;} gtk_label_set_text(GTK_LABEL(p->status),"Diagnostico salvo no historico."); } aviso(p,"Diagnostico salvo/atualizado com sucesso."); }
-static void tela_diagnostico(Painel*p){ limpar_area(p->area); p->linhaDiagEdicao=-1; const char*opMax[]={"Bem posicionada","Protruida","Retruida"}; const char*opPerfil[]={"Convexo suave","Reto","Convexo","Concavo"}; char tit[260]; snprintf(tit,sizeof tit,"Realizar diagnostico - %s",p->pacienteAtual.nome); gtk_box_append(GTK_BOX(p->area),gtk_label_new(tit)); p->status=gtk_label_new("Novo diagnostico."); gtk_widget_set_halign(p->status,GTK_ALIGN_START); gtk_box_append(GTK_BOX(p->area),p->status); GtkWidget*g=gtk_grid_new(); gtk_grid_set_row_spacing(GTK_GRID(g),8); gtk_grid_set_column_spacing(GTK_GRID(g),10); gtk_box_append(GTK_BOX(p->area),g); p->dataExame=entry_grid(g,"Data do exame:",0); placeholder(p->dataExame,"01/01/2000"); g_signal_connect(p->dataExame,"changed",G_CALLBACK(filtro_data),NULL); p->maxila=combo_grid(g,"Maxila:",1,opMax,3); p->mmMaxila=spin_grid(g,"Grau maxila mm:",2,0,0,99,1,0); gtk_widget_set_sensitive(p->mmMaxila,FALSE); p->perfil=combo_grid(g,"Perfil tegumentar:",3,opPerfil,4); p->coa=spin_grid(g,"CoA:",4,90,0,200,1,0); p->cogn=spin_grid(g,"CoGn real:",5,116,0,250,1,0); p->afai=spin_grid(g,"AFAI real:",6,64,0,200,1,0); p->anb=spin_grid(g,"ANB:",7,2,-20,30,.1,1); p->sngogn=spin_grid(g,"SN.GoGn:",8,32,0,80,.1,1); p->dist1na=spin_grid(g,"1-NA dist:",9,4,-50,50,.1,1); p->ang1na=spin_grid(g,"1.NA ang:",10,24,-50,100,.1,1); p->dist1nb=spin_grid(g,"1-NB dist:",11,4,-50,50,.1,1); p->ang1nb=spin_grid(g,"1.NB ang:",12,25,-50,100,.1,1); g_signal_connect(p->maxila,"changed",G_CALLBACK(ao_mudar_maxila),p); GtkWidget*bcalc=gtk_button_new_with_label("Calcular laudo"),*bsalvar=gtk_button_new_with_label("Salvar diagnostico no historico"),*voltar=gtk_button_new_with_label("Voltar"); gtk_box_append(GTK_BOX(p->area),bcalc); gtk_box_append(GTK_BOX(p->area),bsalvar); gtk_box_append(GTK_BOX(p->area),voltar); p->resultado=NULL; g_signal_connect(bcalc,"clicked",G_CALLBACK(ao_calc),p); g_signal_connect(bsalvar,"clicked",G_CALLBACK(ao_salvar_diag),p); g_signal_connect(voltar,"clicked",G_CALLBACK(ao_voltar_menu),p); }
+static void ao_voltar_menu(GtkButton*b, gpointer dados){ tela_menu_paciente((Painel*)dados); }
 
-static void preencher_diag_de_paciente(Painel*p,const Paciente*pac){ tela_diagnostico(p); gtk_editable_set_text(GTK_EDITABLE(p->dataExame),pac->dataExame); if(pac->medidas.tipoMaxila>=1&&pac->medidas.tipoMaxila<=3)gtk_combo_box_set_active(GTK_COMBO_BOX(p->maxila),pac->medidas.tipoMaxila-1); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->mmMaxila),pac->medidas.mmMaxila); if(pac->medidas.perfilTegumentar>=1&&pac->medidas.perfilTegumentar<=4)gtk_combo_box_set_active(GTK_COMBO_BOX(p->perfil),pac->medidas.perfilTegumentar-1); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->coa),pac->medidas.CoAOriginal); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->cogn),pac->medidas.CoGnReal); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->afai),pac->medidas.AFAIReal); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->anb),pac->medidas.ANB); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->sngogn),pac->medidas.SNGoGn); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->dist1na),pac->medidas.dist1NA); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->ang1na),pac->medidas.ang1NA); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->dist1nb),pac->medidas.dist1NB); gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->ang1nb),pac->medidas.ang1NB); snprintf(p->ultimoLaudo,sizeof p->ultimoLaudo,"%s",pac->laudo); p->linhaDiagEdicao=pac->linhaArquivo; abrir_laudo_calculado(p,pac->laudo); gtk_label_set_text(GTK_LABEL(p->status),"Editando diagnostico selecionado no historico."); }
-static void ao_editar_diag(GtkButton*b,gpointer dados){ LinhaCtx*ctx=dados; Paciente pac; if(carregar_paciente_por_linha(ctx->linha,&pac)) preencher_diag_de_paciente(ctx->p,&pac); }
-static void abrir_laudo_historico(Painel*p,const Paciente*pac){ GtkWidget*j=gtk_application_window_new(p->app),*box=gtk_box_new(GTK_ORIENTATION_VERTICAL,10),*view=gtk_text_view_new(),*scr=gtk_scrolled_window_new(),*bt=gtk_button_new_with_label("Editar este diagnostico"); gtk_window_set_title(GTK_WINDOW(j),"Laudo do diagnostico"); gtk_window_set_default_size(GTK_WINDOW(j),760,620); gtk_widget_set_margin_top(box,12); gtk_widget_set_margin_bottom(box,12); gtk_widget_set_margin_start(box,12); gtk_widget_set_margin_end(box,12); gtk_window_set_child(GTK_WINDOW(j),box); gtk_text_view_set_editable(GTK_TEXT_VIEW(view),FALSE); gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(view),GTK_WRAP_WORD); textview_set(view,pac->laudo); gtk_widget_set_vexpand(scr,TRUE); gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr),view); gtk_box_append(GTK_BOX(box),scr); LinhaCtx*ctx=g_new0(LinhaCtx,1); ctx->p=p; ctx->linha=pac->linhaArquivo; gtk_box_append(GTK_BOX(box),bt); g_signal_connect(bt,"clicked",G_CALLBACK(ao_editar_diag),ctx); gtk_window_present(GTK_WINDOW(j)); }
-static void ao_abrir_hist(GtkListBox*b,GtkListBoxRow*r,gpointer dados){ Painel*p=dados; int linha=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(r),"linha")); Paciente pac; if(linha<0)return; if(carregar_paciente_por_linha(linha,&pac)) abrir_laudo_historico(p,&pac); }
-static void tela_historico(Painel*p){ limpar_area(p->area); char titulo[260]; snprintf(titulo,sizeof titulo,"Historico de diagnosticos - %s",p->pacienteAtual.nome); gtk_box_append(GTK_BOX(p->area),gtk_label_new(titulo)); GtkWidget*lista=gtk_list_box_new(),*scr=gtk_scrolled_window_new(),*voltar=gtk_button_new_with_label("Voltar"); FILE*f=fopen(ARQ_PACIENTES,"r"); char linha[7000]; int n=0,achou=0; if(f){ while(fgets(linha,sizeof linha,f)){ Paciente pac; if(carregar_paciente_por_linha(n,&pac)&&strcmp(pac.dentistaEmail,p->dentista.email)==0&&strcmp(pac.nome,p->pacienteAtual.nome)==0){ char txt[500]; GtkWidget*row=gtk_list_box_row_new(),*lab; snprintf(txt,sizeof txt,"Dr(a). %s | Paciente: %s | Data: %s | Classe %s",pac.dentistaNome,pac.nome,pac.dataExame,pac.classe); lab=gtk_label_new(txt); gtk_widget_set_halign(lab,GTK_ALIGN_START); gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),lab); g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(n)); gtk_list_box_append(GTK_LIST_BOX(lista),row); achou=1;} n++; } fclose(f);} if(!achou){ GtkWidget*row=gtk_list_box_row_new(); gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row),gtk_label_new("Nenhum diagnostico salvo para este paciente.")); g_object_set_data(G_OBJECT(row),"linha",GINT_TO_POINTER(-1)); gtk_list_box_append(GTK_LIST_BOX(lista),row);} gtk_widget_set_vexpand(scr,TRUE); gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr),lista); gtk_box_append(GTK_BOX(p->area),scr); gtk_box_append(GTK_BOX(p->area),voltar); g_signal_connect(lista,"row-activated",G_CALLBACK(ao_abrir_hist),p); g_signal_connect(voltar,"clicked",G_CALLBACK(ao_voltar_menu),p); }
+static void tela_form_perfil(Painel*p, int novo) { 
+    limpar_area(p->area); 
+    gtk_box_append(GTK_BOX(p->area), gtk_label_new(novo ? "Cadastrar novo paciente" : "Perfil do paciente")); 
+    
+    GtkWidget* g = gtk_grid_new(); 
+    gtk_grid_set_row_spacing(GTK_GRID(g), 8); 
+    gtk_grid_set_column_spacing(GTK_GRID(g), 10); 
+    gtk_box_append(GTK_BOX(p->area), g); 
+    
+    p->nome = entry_grid(g, "Nome:", 0);
+    p->idade = spin_grid(g, "Idade:", 1, 18, 0, 120, 1, 0); 
+    p->cpf = entry_grid(g, "CPF:", 2); 
+    p->telefone = entry_grid(g, "Telefone:", 3); 
+    p->email = entry_grid(g, "Email:", 4); 
+    p->endereco = entry_grid(g, "Endereco:", 5); 
+    p->dataNascimento = entry_grid(g, "Data nascimento:", 6); 
+    p->observacoes = entry_grid(g, "Observacoes:", 7); 
+    
+    placeholder(p->cpf, "123.456.789-00"); 
+    placeholder(p->telefone, "81912345678"); 
+    placeholder(p->email, "conta@gmail.com"); 
+    placeholder(p->dataNascimento, "01/01/2000");
+    
+    g_signal_connect(p->nome, "changed", G_CALLBACK(filtro_nome), NULL); 
+    g_signal_connect(p->cpf, "changed", G_CALLBACK(filtro_num), NULL); 
+    g_signal_connect(p->telefone, "changed", G_CALLBACK(filtro_num), NULL); 
+    g_signal_connect(p->dataNascimento, "changed", G_CALLBACK(filtro_data), NULL); 
+    
+    if(!novo && p->temPacienteAtual) { 
+        PerfilPaciente* pp = &p->pacienteAtual; 
+        gtk_editable_set_text(GTK_EDITABLE(p->nome), pp->nome); 
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->idade), pp->idade); 
+        gtk_editable_set_text(GTK_EDITABLE(p->cpf), pp->cpf); 
+        gtk_editable_set_text(GTK_EDITABLE(p->telefone), pp->telefone); 
+        gtk_editable_set_text(GTK_EDITABLE(p->email), pp->email); 
+        gtk_editable_set_text(GTK_EDITABLE(p->endereco), pp->endereco); 
+        gtk_editable_set_text(GTK_EDITABLE(p->dataNascimento), pp->dataNascimento); 
+        gtk_editable_set_text(GTK_EDITABLE(p->observacoes), pp->observacoes); 
+    } 
+    
+    GtkWidget* bt = gtk_button_new_with_label(novo ? "Cadastrar paciente" : "Alterar dados do paciente"); 
+    LinhaCtx* ctx = g_new0(LinhaCtx, 1); 
+    ctx->p = p; 
+    ctx->linha = novo ? -1 : p->pacienteAtual.linhaArquivo; 
+    
+    gtk_box_append(GTK_BOX(p->area), bt); 
+    g_signal_connect(bt, "clicked", G_CALLBACK(ao_salvar_perfil_paciente), ctx); 
+    
+    if(!novo) { 
+        GtkWidget* voltar = gtk_button_new_with_label("Voltar"); 
+        gtk_box_append(GTK_BOX(p->area), voltar); 
+        g_signal_connect(voltar, "clicked", G_CALLBACK(ao_voltar_menu), p);
+    } 
+}
 
-static GtkWidget* senha_grid(GtkWidget*g,const char*l,int r){ GtkWidget*e=entry_grid(g,l,r); gtk_entry_set_visibility(GTK_ENTRY(e),FALSE); gtk_entry_set_invisible_char(GTK_ENTRY(e),'*'); return e; }
-typedef struct{Painel*p; GtkWidget*nome,*email,*cro,*tel,*senha,*msg;} PerfilDentistaW;
-static void preencher_dent(GtkWidget*n,GtkWidget*e,GtkWidget*c,GtkWidget*t,GtkWidget*s,Dentista*d){ gtk_editable_set_text(GTK_EDITABLE(n),d->nome); gtk_editable_set_text(GTK_EDITABLE(e),d->email); gtk_editable_set_text(GTK_EDITABLE(c),d->cro); gtk_editable_set_text(GTK_EDITABLE(t),d->telefone); gtk_editable_set_text(GTK_EDITABLE(s),d->senha); }
-static void ao_salvar_dent(GtkButton*b,gpointer dados){ PerfilDentistaW*w=dados; Dentista novo; char erro[200]; snprintf(novo.nome,sizeof novo.nome,"%s",gtk_editable_get_text(GTK_EDITABLE(w->nome))); snprintf(novo.email,sizeof novo.email,"%s",gtk_editable_get_text(GTK_EDITABLE(w->email))); snprintf(novo.cro,sizeof novo.cro,"%s",gtk_editable_get_text(GTK_EDITABLE(w->cro))); snprintf(novo.telefone,sizeof novo.telefone,"%s",gtk_editable_get_text(GTK_EDITABLE(w->tel))); snprintf(novo.senha,sizeof novo.senha,"%s",gtk_editable_get_text(GTK_EDITABLE(w->senha))); if(!nomeValido(novo.nome)){gtk_label_set_text(GTK_LABEL(w->msg),"Nome invalido.");return;} if(!emailValido(novo.email)){gtk_label_set_text(GTK_LABEL(w->msg),"Email invalido.");return;} if(!croValidoSimples(novo.cro)){gtk_label_set_text(GTK_LABEL(w->msg),"CRO invalido. Use exatamente o formato 12.345.");return;} if(!telefoneValidoSimples(novo.telefone)){gtk_label_set_text(GTK_LABEL(w->msg),"Telefone invalido.");return;} if(!senhaValida(novo.senha)){gtk_label_set_text(GTK_LABEL(w->msg),"Senha fraca.");return;} if(!atualizar_dentista(w->p->dentista.email,&novo,erro,sizeof erro)){gtk_label_set_text(GTK_LABEL(w->msg),erro);return;} w->p->dentista=novo; gtk_label_set_text(GTK_LABEL(w->msg),"Perfil atualizado."); carregar_lista_pacientes(w->p); }
-static void ao_sair(GtkButton*b,gpointer dados){ Painel*p=dados; gtk_window_destroy(GTK_WINDOW(p->janela)); g_application_activate(G_APPLICATION(p->app)); }
+static void ao_mudar_maxila(GtkComboBox* c, gpointer dados) { 
+    Painel* p = dados; 
+    int a = gtk_combo_box_get_active(c); 
+    gtk_widget_set_sensitive(p->mmMaxila, a != 0); 
+    if(a == 0) gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->mmMaxila), 0); 
+}
 
-void abrir_painel(GtkApplication *appGtk, const Dentista *dentista){ Painel*p=g_new0(Painel,1); p->app=appGtk; p->dentista=*dentista; p->linhaDiagEdicao=-1; p->janela=gtk_application_window_new(appGtk); gtk_window_set_title(GTK_WINDOW(p->janela),"Sistema Ortodontico - Painel do Dentista"); gtk_window_set_default_size(GTK_WINDOW(p->janela),1120,760); GtkWidget*notebook=gtk_notebook_new(); gtk_window_set_child(GTK_WINDOW(p->janela),notebook);
-    GtkWidget*pag=gtk_box_new(GTK_ORIENTATION_HORIZONTAL,12); gtk_widget_set_margin_top(pag,12); gtk_widget_set_margin_bottom(pag,12); gtk_widget_set_margin_start(pag,12); gtk_widget_set_margin_end(pag,12); gtk_notebook_append_page(GTK_NOTEBOOK(notebook),pag,gtk_label_new("Pacientes"));
-    GtkWidget*lat=gtk_box_new(GTK_ORIENTATION_VERTICAL,8); gtk_widget_set_size_request(lat,330,-1); gtk_box_append(GTK_BOX(pag),lat); gtk_box_append(GTK_BOX(lat),gtk_label_new("Lista dos pacientes cadastrados")); p->listaPacientes=gtk_list_box_new(); GtkWidget*scr=gtk_scrolled_window_new(); gtk_widget_set_vexpand(scr,TRUE); gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr),p->listaPacientes); gtk_box_append(GTK_BOX(lat),scr); GtkWidget*mais=gtk_button_new_with_label("+ Cadastrar novo paciente"); gtk_box_append(GTK_BOX(lat),mais);
-    p->area=gtk_box_new(GTK_ORIENTATION_VERTICAL,10); gtk_widget_set_hexpand(p->area,TRUE); gtk_box_append(GTK_BOX(pag),p->area); g_signal_connect(p->listaPacientes,"row-activated",G_CALLBACK(ao_ativar_paciente),p); g_signal_connect(mais,"clicked",G_CALLBACK(ao_novo_paciente),p); carregar_lista_pacientes(p); tela_inicial(p);
-    GtkWidget*perfil=gtk_box_new(GTK_ORIENTATION_VERTICAL,10); gtk_widget_set_margin_top(perfil,12); gtk_widget_set_margin_bottom(perfil,12); gtk_widget_set_margin_start(perfil,12); gtk_widget_set_margin_end(perfil,12); gtk_notebook_append_page(GTK_NOTEBOOK(notebook),perfil,gtk_label_new("Meu perfil")); GtkWidget*g=gtk_grid_new(); gtk_grid_set_row_spacing(GTK_GRID(g),8); gtk_grid_set_column_spacing(GTK_GRID(g),10); gtk_box_append(GTK_BOX(perfil),g); PerfilDentistaW*w=g_new0(PerfilDentistaW,1); w->p=p; w->nome=entry_grid(g,"Nome:",0); w->email=entry_grid(g,"Email:",1); w->cro=entry_grid(g,"CRO:",2); w->tel=entry_grid(g,"Telefone:",3); w->senha=senha_grid(g,"Senha:",4); placeholder(w->email,"conta@gmail.com"); placeholder(w->cro,"12.345"); placeholder(w->tel,"81912345678"); g_signal_connect(w->nome,"changed",G_CALLBACK(filtro_nome),NULL); g_signal_connect(w->cro,"changed",G_CALLBACK(filtro_num),NULL); g_signal_connect(w->tel,"changed",G_CALLBACK(filtro_num),NULL); preencher_dent(w->nome,w->email,w->cro,w->tel,w->senha,&p->dentista); GtkWidget*bt=gtk_button_new_with_label("Salvar alteracoes do perfil"),*sair=gtk_button_new_with_label("Sair da conta"); w->msg=gtk_label_new(""); gtk_box_append(GTK_BOX(perfil),bt); gtk_box_append(GTK_BOX(perfil),sair); gtk_box_append(GTK_BOX(perfil),w->msg); g_signal_connect(bt,"clicked",G_CALLBACK(ao_salvar_dent),w); g_signal_connect(sair,"clicked",G_CALLBACK(ao_sair),p); gtk_window_present(GTK_WINDOW(p->janela)); }
+static void abrir_laudo_calculado(Painel* p, const char* laudo) { 
+    GtkWidget* j = gtk_application_window_new(p->app);
+    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    GtkWidget* view = gtk_text_view_new();
+    GtkWidget* scr = gtk_scrolled_window_new();
+    GtkWidget* bt = gtk_button_new_with_label("Fechar"); 
+    
+    gtk_window_set_title(GTK_WINDOW(j), "Resultado do diagnostico"); 
+    gtk_window_set_default_size(GTK_WINDOW(j), 780, 640); 
+    gtk_widget_set_margin_top(box, 12); 
+    gtk_widget_set_margin_bottom(box, 12); 
+    gtk_widget_set_margin_start(box, 12); 
+    gtk_widget_set_margin_end(box, 12); 
+    gtk_window_set_child(GTK_WINDOW(j), box); 
+    
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(view), FALSE); 
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(view), GTK_WRAP_WORD); 
+    textview_set(view, laudo); 
+    
+    gtk_widget_set_vexpand(scr, TRUE); 
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr), view); 
+    
+    gtk_box_append(GTK_BOX(box), scr); 
+    gtk_box_append(GTK_BOX(box), bt); 
+    g_signal_connect_swapped(bt, "clicked", G_CALLBACK(gtk_window_destroy), j); 
+    
+    gtk_window_present(GTK_WINDOW(j)); 
+}
+
+static int calcular_diag(Painel* p, int abrir) { 
+    MedidasOrtodonticas m; 
+    ResultadoOrtodontico r; 
+    const char* data = gtk_editable_get_text(GTK_EDITABLE(p->dataExame)); 
+    
+    if(strlen(data) && !dataValidaSimples(data)){
+        aviso(p, "Data do exame invalida. Use o formato 01/01/2020.");
+        return 0;
+    } 
+    
+    m.tipoMaxila = gtk_combo_box_get_active(GTK_COMBO_BOX(p->maxila)) + 1; 
+    m.mmMaxila = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->mmMaxila)); 
+    m.perfilTegumentar = gtk_combo_box_get_active(GTK_COMBO_BOX(p->perfil)) + 1; 
+    m.CoAOriginal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->coa)); 
+    m.CoGnReal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->cogn)); 
+    m.AFAIReal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->afai)); 
+    m.ANB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->anb)); 
+    m.SNGoGn = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->sngogn)); 
+    m.dist1NA = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1na)); 
+    m.ang1NA = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1na)); 
+    m.dist1NB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1nb)); 
+    m.ang1NB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1nb)); 
+    
+    if(!calcularAnaliseOrtodontica(p->pacienteAtual.nome, 0, &m, &r)){ 
+        snprintf(p->ultimoLaudo, sizeof p->ultimoLaudo, "%s", r.laudo); 
+        abrir_laudo_calculado(p, p->ultimoLaudo); 
+        return 0;
+    } 
+    
+    snprintf(p->ultimoLaudo, sizeof p->ultimoLaudo, "%s", r.laudo); 
+    snprintf(p->ultimaClasse, sizeof p->ultimaClasse, "%s", r.classe); 
+    snprintf(p->ultimaMaxila, sizeof p->ultimaMaxila, "%s", r.maxila); 
+    snprintf(p->ultimaMandibula, sizeof p->ultimaMandibula, "%s", r.mandibula); 
+    snprintf(p->ultimoCrescimento, sizeof p->ultimoCrescimento, "%s", r.crescimento); 
+    snprintf(p->ultimoPerfil, sizeof p->ultimoPerfil, "%s", r.perfil); 
+    
+    if(abrir) abrir_laudo_calculado(p, p->ultimoLaudo); 
+    return 1; 
+}
+
+static void montar_diag(Painel* p, Paciente* pac) { 
+    memset(pac, 0, sizeof *pac); 
+    snprintf(pac->dentistaEmail, sizeof pac->dentistaEmail, "%s", p->dentista.email); 
+    snprintf(pac->dentistaNome, sizeof pac->dentistaNome, "%s", p->dentista.nome); 
+    snprintf(pac->nome, sizeof pac->nome, "%s", p->pacienteAtual.nome); 
+    pac->idade = p->pacienteAtual.idade; 
+    snprintf(pac->cpf, sizeof pac->cpf, "%s", p->pacienteAtual.cpf); 
+    snprintf(pac->telefone, sizeof pac->telefone, "%s", p->pacienteAtual.telefone); 
+    snprintf(pac->email, sizeof pac->email, "%s", p->pacienteAtual.email); 
+    snprintf(pac->endereco, sizeof pac->endereco, "%s", p->pacienteAtual.endereco); 
+    snprintf(pac->dataNascimento, sizeof pac->dataNascimento, "%s", p->pacienteAtual.dataNascimento); 
+    snprintf(pac->observacoes, sizeof pac->observacoes, "%s", p->pacienteAtual.observacoes); 
+    snprintf(pac->dataExame, sizeof pac->dataExame, "%s", gtk_editable_get_text(GTK_EDITABLE(p->dataExame))); 
+    
+    if(!strlen(pac->dataExame)) snprintf(pac->dataExame, sizeof pac->dataExame, "sem data"); 
+    
+    pac->medidas.tipoMaxila = gtk_combo_box_get_active(GTK_COMBO_BOX(p->maxila)) + 1; 
+    pac->medidas.mmMaxila = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->mmMaxila)); 
+    pac->medidas.perfilTegumentar = gtk_combo_box_get_active(GTK_COMBO_BOX(p->perfil)) + 1; 
+    pac->medidas.CoAOriginal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->coa)); 
+    pac->medidas.CoGnReal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->cogn)); 
+    pac->medidas.AFAIReal = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(p->afai)); 
+    pac->medidas.ANB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->anb)); 
+    pac->medidas.SNGoGn = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->sngogn)); 
+    pac->medidas.dist1NA = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1na)); 
+    pac->medidas.ang1NA = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1na)); 
+    pac->medidas.dist1NB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->dist1nb)); 
+    pac->medidas.ang1NB = gtk_spin_button_get_value(GTK_SPIN_BUTTON(p->ang1nb)); 
+    
+    snprintf(pac->classe, sizeof pac->classe, "%s", p->ultimaClasse); 
+    snprintf(pac->maxila, sizeof pac->maxila, "%s", p->ultimaMaxila); 
+    snprintf(pac->mandibula, sizeof pac->mandibula, "%s", p->ultimaMandibula); 
+    snprintf(pac->crescimento, sizeof pac->crescimento, "%s", p->ultimoCrescimento); 
+    snprintf(pac->perfil, sizeof pac->perfil, "%s", p->ultimoPerfil); 
+    snprintf(pac->laudo, sizeof pac->laudo, "%s", p->ultimoLaudo); 
+}
+
+static void ao_calc(GtkButton* b, gpointer dados) { 
+    calcular_diag((Painel*)dados, 1); 
+}
+
+static void ao_salvar_diag(GtkButton* b, gpointer dados) { 
+    Painel* p = dados; 
+    Paciente pac; 
+    char erro[200]; 
+    
+    if(!calcular_diag(p, 0)) return; 
+    montar_diag(p, &pac); 
+    
+    if(p->linhaDiagEdicao >= 0) { 
+        if(!atualizar_paciente_linha(p->linhaDiagEdicao, &pac, erro, sizeof erro)){
+            aviso(p, erro);
+            return;
+        } 
+        gtk_label_set_text(GTK_LABEL(p->status), "Diagnostico atualizado."); 
+    } else { 
+        if(!salvar_paciente(&pac, erro, sizeof erro)){
+            aviso(p, erro);
+            return;
+        } 
+        gtk_label_set_text(GTK_LABEL(p->status), "Diagnostico salvo no historico."); 
+    } 
+    aviso(p, "Diagnostico salvo/atualizado com sucesso."); 
+}
+
+static void tela_diagnostico(Painel* p) { 
+    limpar_area(p->area); 
+    p->linhaDiagEdicao = -1; 
+    
+    const char* opMax[] = {"Bem posicionada", "Protruida", "Retruida"}; 
+    const char* opPerfil[] = {"Convexo suave", "Reto", "Convexo", "Concavo"}; 
+    char tit[260]; 
+    snprintf(tit, sizeof tit, "Realizar diagnostico - %s", p->pacienteAtual.nome); 
+    gtk_box_append(GTK_BOX(p->area), gtk_label_new(tit)); 
+    
+    p->status = gtk_label_new("Novo diagnostico."); 
+    gtk_widget_set_halign(p->status, GTK_ALIGN_START); 
+    gtk_box_append(GTK_BOX(p->area), p->status); 
+    
+    GtkWidget* g = gtk_grid_new(); 
+    gtk_grid_set_row_spacing(GTK_GRID(g), 8); 
+    gtk_grid_set_column_spacing(GTK_GRID(g), 10); 
+    gtk_box_append(GTK_BOX(p->area), g); 
+    
+    p->dataExame = entry_grid(g, "Data do exame:", 0); 
+    placeholder(p->dataExame, "01/01/2000"); 
+    g_signal_connect(p->dataExame, "changed", G_CALLBACK(filtro_data), NULL); 
+    
+    p->maxila = combo_grid(g, "Maxila:", 1, opMax, 3); 
+    p->mmMaxila = spin_grid(g, "Grau maxila mm:", 2, 0, 0, 99, 1, 0); 
+    gtk_widget_set_sensitive(p->mmMaxila, FALSE); 
+    p->perfil = combo_grid(g, "Perfil tegumentar:", 3, opPerfil, 4); 
+    p->coa = spin_grid(g, "CoA:", 4, 90, 0, 200, 1, 0); 
+    p->cogn = spin_grid(g, "CoGn real:", 5, 116, 0, 250, 1, 0); 
+    p->afai = spin_grid(g, "AFAI real:", 6, 64, 0, 200, 1, 0); 
+    p->anb = spin_grid(g, "ANB:", 7, 2, -20, 30, .1, 1); 
+    p->sngogn = spin_grid(g, "SN.GoGn:", 8, 32, 0, 80, .1, 1); 
+    p->dist1na = spin_grid(g, "1-NA dist:", 9, 4, -50, 50, .1, 1); 
+    p->ang1na = spin_grid(g, "1.NA ang:", 10, 24, -50, 100, .1, 1); 
+    p->dist1nb = spin_grid(g, "1-NB dist:", 11, 4, -50, 50, .1, 1); 
+    p->ang1nb = spin_grid(g, "1.NB ang:", 12, 25, -50, 100, .1, 1); 
+    
+    g_signal_connect(p->maxila, "changed", G_CALLBACK(ao_mudar_maxila), p); 
+    
+    GtkWidget* bcalc = gtk_button_new_with_label("Calcular laudo");
+    GtkWidget* bsalvar = gtk_button_new_with_label("Salvar diagnostico no historico");
+    GtkWidget* voltar = gtk_button_new_with_label("Voltar"); 
+    
+    gtk_box_append(GTK_BOX(p->area), bcalc); 
+    gtk_box_append(GTK_BOX(p->area), bsalvar); 
+    gtk_box_append(GTK_BOX(p->area), voltar); 
+    
+    p->resultado = NULL; 
+    g_signal_connect(bcalc, "clicked", G_CALLBACK(ao_calc), p); 
+    g_signal_connect(bsalvar, "clicked", G_CALLBACK(ao_salvar_diag), p); 
+    g_signal_connect(voltar, "clicked", G_CALLBACK(ao_voltar_menu), p); 
+}
+
+static void preencher_diag_de_paciente(Painel* p, const Paciente* pac) { 
+    tela_diagnostico(p); 
+    gtk_editable_set_text(GTK_EDITABLE(p->dataExame), pac->dataExame); 
+    
+    if(pac->medidas.tipoMaxila >= 1 && pac->medidas.tipoMaxila <= 3)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(p->maxila), pac->medidas.tipoMaxila - 1); 
+    
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->mmMaxila), pac->medidas.mmMaxila); 
+    
+    if(pac->medidas.perfilTegumentar >= 1 && pac->medidas.perfilTegumentar <= 4)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(p->perfil), pac->medidas.perfilTegumentar - 1); 
+    
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->coa), pac->medidas.CoAOriginal); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->cogn), pac->medidas.CoGnReal); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->afai), pac->medidas.AFAIReal); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->anb), pac->medidas.ANB); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->sngogn), pac->medidas.SNGoGn); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->dist1na), pac->medidas.dist1NA); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->ang1na), pac->medidas.ang1NA); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->dist1nb), pac->medidas.dist1NB); 
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(p->ang1nb), pac->medidas.ang1NB); 
+    
+    snprintf(p->ultimoLaudo, sizeof p->ultimoLaudo, "%s", pac->laudo); 
+    p->linhaDiagEdicao = pac->linhaArquivo; 
+    abrir_laudo_calculado(p, pac->laudo); 
+    gtk_label_set_text(GTK_LABEL(p->status), "Editando diagnostico selecionado no historico."); 
+}
+
+static void ao_editar_diag(GtkButton* b, gpointer dados) { 
+    LinhaCtx* ctx = dados; 
+    Paciente pac; 
+    if(carregar_paciente_por_linha(ctx->linha, &pac)) 
+        preencher_diag_de_paciente(ctx->p, &pac); 
+}
+
+static void abrir_laudo_historico(Painel* p, const Paciente* pac) { 
+    GtkWidget* j = gtk_application_window_new(p->app);
+    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    GtkWidget* view = gtk_text_view_new();
+    GtkWidget* scr = gtk_scrolled_window_new();
+    GtkWidget* bt = gtk_button_new_with_label("Editar este diagnostico"); 
+    
+    gtk_window_set_title(GTK_WINDOW(j), "Laudo do diagnostico"); 
+    gtk_window_set_default_size(GTK_WINDOW(j), 760, 620); 
+    gtk_widget_set_margin_top(box, 12); 
+    gtk_widget_set_margin_bottom(box, 12); 
+    gtk_widget_set_margin_start(box, 12); 
+    gtk_widget_set_margin_end(box, 12); 
+    gtk_window_set_child(GTK_WINDOW(j), box); 
+    
+    gtk_text_view_set_editable(GTK_TEXT_VIEW(view), FALSE); 
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(view), GTK_WRAP_WORD); 
+    textview_set(view, pac->laudo); 
+    
+    gtk_widget_set_vexpand(scr, TRUE); 
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr), view); 
+    gtk_box_append(GTK_BOX(box), scr); 
+    
+    LinhaCtx* ctx = g_new0(LinhaCtx, 1); 
+    ctx->p = p; 
+    ctx->linha = pac->linhaArquivo; 
+    
+    gtk_box_append(GTK_BOX(box), bt); 
+    g_signal_connect(bt, "clicked", G_CALLBACK(ao_editar_diag), ctx); 
+    gtk_window_present(GTK_WINDOW(j)); 
+}
+
+static void ao_abrir_hist(GtkListBox* b, GtkListBoxRow* r, gpointer dados) { 
+    Painel* p = dados; 
+    int linha = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(r), "linha")); 
+    Paciente pac; 
+    
+    if(linha < 0) return; 
+    
+    if(carregar_paciente_por_linha(linha, &pac)) 
+        abrir_laudo_historico(p, &pac); 
+}
+
+static void tela_historico(Painel* p) { 
+    limpar_area(p->area); 
+    char titulo[260]; 
+    snprintf(titulo, sizeof titulo, "Historico de diagnosticos - %s", p->pacienteAtual.nome); 
+    gtk_box_append(GTK_BOX(p->area), gtk_label_new(titulo)); 
+    
+    GtkWidget* lista = gtk_list_box_new();
+    GtkWidget* scr = gtk_scrolled_window_new();
+    GtkWidget* voltar = gtk_button_new_with_label("Voltar"); 
+    FILE* f = fopen(ARQ_PACIENTES, "r"); 
+    char linha[7000]; 
+    int n = 0, achou = 0; 
+    
+    if(f) { 
+        while(fgets(linha, sizeof linha, f)) { 
+            Paciente pac; 
+            if(carregar_paciente_por_linha(n, &pac) && strcmp(pac.dentistaEmail, p->dentista.email) == 0 && strcmp(pac.nome, p->pacienteAtual.nome) == 0) { 
+                char txt[500]; 
+                GtkWidget* row = gtk_list_box_row_new();
+                GtkWidget* lab; 
+                snprintf(txt, sizeof txt, "Dr(a). %s | Paciente: %s | Data: %s | Classe %s", pac.dentistaNome, pac.nome, pac.dataExame, pac.classe); 
+                lab = gtk_label_new(txt); 
+                gtk_widget_set_halign(lab, GTK_ALIGN_START); 
+                gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), lab); 
+                g_object_set_data(G_OBJECT(row), "linha", GINT_TO_POINTER(n)); 
+                gtk_list_box_append(GTK_LIST_BOX(lista), row); 
+                achou = 1;
+            } 
+            n++; 
+        } 
+        fclose(f);
+    } 
+    
+    if(!achou) { 
+        GtkWidget* row = gtk_list_box_row_new(); 
+        gtk_list_box_row_set_child(GTK_LIST_BOX_ROW(row), gtk_label_new("Nenhum diagnostico salvo para este paciente.")); 
+        g_object_set_data(G_OBJECT(row), "linha", GINT_TO_POINTER(-1)); 
+        gtk_list_box_append(GTK_LIST_BOX(lista), row);
+    } 
+    
+    gtk_widget_set_vexpand(scr, TRUE); 
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr), lista); 
+    gtk_box_append(GTK_BOX(p->area), scr); 
+    gtk_box_append(GTK_BOX(p->area), voltar); 
+    
+    g_signal_connect(lista, "row-activated", G_CALLBACK(ao_abrir_hist), p); 
+    g_signal_connect(voltar, "clicked", G_CALLBACK(ao_voltar_menu), p); 
+}
+
+static GtkWidget* senha_grid(GtkWidget* g, const char* l, int r) { 
+    GtkWidget* e = entry_grid(g, l, r); 
+    gtk_entry_set_visibility(GTK_ENTRY(e), FALSE); 
+    gtk_entry_set_invisible_char(GTK_ENTRY(e), '*'); 
+    return e; 
+}
+
+typedef struct {
+    Painel* p; 
+    GtkWidget *nome, *email, *cro, *tel, *senha, *msg;
+} PerfilDentistaW;
+
+static void preencher_dent(GtkWidget* n, GtkWidget* e, GtkWidget* c, GtkWidget* t, GtkWidget* s, Dentista* d) { 
+    gtk_editable_set_text(GTK_EDITABLE(n), d->nome); 
+    gtk_editable_set_text(GTK_EDITABLE(e), d->email); 
+    gtk_editable_set_text(GTK_EDITABLE(c), d->cro); 
+    gtk_editable_set_text(GTK_EDITABLE(t), d->telefone); 
+    gtk_editable_set_text(GTK_EDITABLE(s), d->senha); 
+}
+
+static void ao_salvar_dent(GtkButton* b, gpointer dados) { 
+    PerfilDentistaW* w = dados; 
+    Dentista novo; 
+    char erro[200]; 
+    
+    snprintf(novo.nome, sizeof novo.nome, "%s", gtk_editable_get_text(GTK_EDITABLE(w->nome))); 
+    snprintf(novo.email, sizeof novo.email, "%s", gtk_editable_get_text(GTK_EDITABLE(w->email))); 
+    snprintf(novo.cro, sizeof novo.cro, "%s", gtk_editable_get_text(GTK_EDITABLE(w->cro))); 
+    snprintf(novo.telefone, sizeof novo.telefone, "%s", gtk_editable_get_text(GTK_EDITABLE(w->tel))); 
+    snprintf(novo.senha, sizeof novo.senha, "%s", gtk_editable_get_text(GTK_EDITABLE(w->senha))); 
+    
+    if(!nomeValido(novo.nome)){ gtk_label_set_text(GTK_LABEL(w->msg), "Nome invalido."); return; } 
+    if(!emailValido(novo.email)){ gtk_label_set_text(GTK_LABEL(w->msg), "Email invalido."); return; } 
+    if(!croValidoSimples(novo.cro)){ gtk_label_set_text(GTK_LABEL(w->msg), "CRO invalido. Use exatamente o formato 12.345."); return; } 
+    if(!telefoneValidoSimples(novo.telefone)){ gtk_label_set_text(GTK_LABEL(w->msg), "Telefone invalido."); return; } 
+    if(!senhaValida(novo.senha)){ gtk_label_set_text(GTK_LABEL(w->msg), "Senha fraca."); return; } 
+    
+    if(!atualizar_dentista(w->p->dentista.email, &novo, erro, sizeof erro)){
+        gtk_label_set_text(GTK_LABEL(w->msg), erro); 
+        return;
+    } 
+    
+    w->p->dentista = novo; 
+    gtk_label_set_text(GTK_LABEL(w->msg), "Perfil atualizado."); 
+    carregar_lista_pacientes(w->p); 
+}
+
+static void ao_sair(GtkButton* b, gpointer dados) { Painel* p = dados; gtk_window_destroy(GTK_WINDOW(p->janela)); g_application_activate(G_APPLICATION(p->app)); }
+
+void abrir_painel(GtkApplication *appGtk, const Dentista *dentista) { 
+    Painel* p = g_new0(Painel, 1); 
+    p->app = appGtk; 
+    p->dentista = *dentista; 
+    p->linhaDiagEdicao = -1; 
+    p->janela = gtk_application_window_new(appGtk); 
+    
+    gtk_window_set_title(GTK_WINDOW(p->janela), "Sistema Ortodontico - Painel do Dentista"); 
+    gtk_window_set_default_size(GTK_WINDOW(p->janela), 1120, 760); 
+    
+    GtkWidget* notebook = gtk_notebook_new(); 
+    gtk_window_set_child(GTK_WINDOW(p->janela), notebook);
+    
+    GtkWidget* pag = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12); 
+    gtk_widget_set_margin_top(pag, 12); 
+    gtk_widget_set_margin_bottom(pag, 12); 
+    gtk_widget_set_margin_start(pag, 12); 
+    gtk_widget_set_margin_end(pag, 12); 
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), pag, gtk_label_new("Pacientes"));
+    
+    GtkWidget* lat = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8); 
+    gtk_widget_set_size_request(lat, 330, -1); 
+    gtk_box_append(GTK_BOX(pag), lat); 
+    gtk_box_append(GTK_BOX(lat), gtk_label_new("Lista dos pacientes cadastrados")); 
+    
+    p->listaPacientes = gtk_list_box_new(); 
+    GtkWidget* scr = gtk_scrolled_window_new(); 
+    gtk_widget_set_vexpand(scr, TRUE); 
+    gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW(scr), p->listaPacientes); 
+    gtk_box_append(GTK_BOX(lat), scr); 
+    
+    GtkWidget* mais = gtk_button_new_with_label("+ Cadastrar novo paciente"); 
+    gtk_box_append(GTK_BOX(lat), mais);
+    
+    p->area = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10); 
+    gtk_widget_set_hexpand(p->area, TRUE); 
+    gtk_box_append(GTK_BOX(pag), p->area); 
+    
+    g_signal_connect(p->listaPacientes, "row-activated", G_CALLBACK(ao_ativar_paciente), p); 
+    g_signal_connect(mais, "clicked", G_CALLBACK(ao_novo_paciente), p); 
+    
+    carregar_lista_pacientes(p); 
+    tela_inicial(p);
+    
+    GtkWidget* perfil = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10); 
+    gtk_widget_set_margin_top(perfil, 12); 
+    gtk_widget_set_margin_bottom(perfil, 12); 
+    gtk_widget_set_margin_start(perfil, 12); 
+    gtk_widget_set_margin_end(perfil, 12); 
+    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), perfil, gtk_label_new("Meu perfil")); 
+    
+    GtkWidget* g = gtk_grid_new(); 
+    gtk_grid_set_row_spacing(GTK_GRID(g), 8); 
+    gtk_grid_set_column_spacing(GTK_GRID(g), 10); 
+    gtk_box_append(GTK_BOX(perfil), g); 
+    
+    PerfilDentistaW* w = g_new0(PerfilDentistaW, 1); 
+    w->p = p; 
+    w->nome = entry_grid(g, "Nome:", 0); 
+    w->email = entry_grid(g, "Email:", 1); 
+    w->cro = entry_grid(g, "CRO:", 2); 
+    w->tel = entry_grid(g, "Telefone:", 3); 
+    w->senha = senha_grid(g, "Senha:", 4); 
+    
+    placeholder(w->email, "conta@gmail.com"); 
+    placeholder(w->cro, "12.345"); 
+    placeholder(w->tel, "81912345678"); 
+    
+    g_signal_connect(w->nome, "changed", G_CALLBACK(filtro_nome), NULL); 
+    g_signal_connect(w->cro, "changed", G_CALLBACK(filtro_num), NULL); 
+    g_signal_connect(w->tel, "changed", G_CALLBACK(filtro_num), NULL); 
+    
+    preencher_dent(w->nome, w->email, w->cro, w->tel, w->senha, &p->dentista); 
+    
+    GtkWidget* bt = gtk_button_new_with_label("Salvar alteracoes do perfil");
+    GtkWidget* sair = gtk_button_new_with_label("Sair da conta"); 
+    w->msg = gtk_label_new(""); 
+    
+    gtk_box_append(GTK_BOX(perfil), bt); 
+    gtk_box_append(GTK_BOX(perfil), sair); 
+    gtk_box_append(GTK_BOX(perfil), w->msg); 
+    
+    g_signal_connect(bt, "clicked", G_CALLBACK(ao_salvar_dent), w); 
+    g_signal_connect(sair, "clicked", G_CALLBACK(ao_sair), p); 
+    
+    gtk_window_present(GTK_WINDOW(p->janela)); 
+}

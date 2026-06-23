@@ -81,7 +81,7 @@ diretório onde ele está sendo executado.
 | `login.c` | Tela de login/cadastro de dentista (`iniciar_login`). Valida campos e chama as funções de persistência de `repositorio.c`. |
 | `frontend.c` | Toda a interface do painel do dentista: Lista de pacientes, cadastro e edição de dados do paciente, tela de diagnóstico, tela de histórico, perfil do dentista. É o arquivo que conecta a interface com a lógica de cálculo e persistência. |
 | `analise_ortodontica.c` | Contém a tabela de McNamara e a função `calcularAnaliseOrtodontica`, que aplica todas as regras de negócio do diagnóstico e monta o texto do laudo. |
-| `validacao.c` | Funções puras de validação de texto (senha, email, nome, CPF, telefone, data, CRO) e o filtro de teclado em tempo real dos campos de entrada (`filtrar_entry`). Não depende de regra clínica nenhuma, só de formato. |
+| `validacao.c` | Funções de validação de texto (senha, email, nome, CPF, telefone, data e CRO) e do filtro de teclado em tempo real dos campos de entrada `filtrar_entry`. Responsável por verificar se os dados informados seguem os formatos esperados antes de serem processados pelo sistema. |
 | `repositorio.c` | Toda a leitura/escrita em disco: `dentistas.csv` e `pacientes.csv` (CRUD simples baseado em linhas de texto separadas por `;`), além da exportação do laudo individual em `.txt` (`salvar_laudo_txt`). |
 
 > Observação: o cadastro "perfil do paciente" (`pacientes_cadastrados.csv`)

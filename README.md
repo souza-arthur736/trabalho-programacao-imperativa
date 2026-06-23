@@ -29,7 +29,7 @@ classificação de **McNamara** (maxila/mandíbula/AFAI) e na relação **ANB**
 6. [Regras de negócio do diagnóstico](#regras-de-negócio-do-diagnóstico)
 7. [Persistência de dados (arquivos gerados)](#persistência-de-dados-arquivos-gerados)
 8. [Validações de formulário](#validações-de-formulário)
-9. [Decisões de design e limitações conhecidas](#decisões-de-design-e-limitações-conhecidas)
+9. [Decisões de design, desafios e limitações](#decisões-de-design,-desafios-e-limitações)
 
 ---
 
@@ -268,7 +268,7 @@ não deixa digitar número).
 
 ---
 
-## Decisões de design e limitações conhecidas
+## Decisões de design, desafios e limitações
 
 - **"misto/indefinido" no crescimento vertical**: o material de referência
   só prevê três resultados (equilibrado, vertical, horizontal). A equipe
@@ -288,7 +288,59 @@ não deixa digitar número).
   parâmetros cefalométricos do material de referência (Steiner, Tweed,
   Ricketts completos, USP/PROFIS), que aparecem como catálogo de apoio mas
   não fazem parte do roteiro de cálculo automatizado.
-- **APIs do GTK4 deprecadas**: `gtk_combo_box_get_active`/`set_active`
-  emitem warning de depreciação na compilação (o GTK4 recomenda
-  `GtkDropDown`), mas continuam funcionais nesta versão do GTK4 — não é um
-  erro, só um aviso para uma futura modernização da interface.
+  
+  DESAFIOS DO PROJETO
+
+• Instalação e configuração do GTK4: configurar o GTK4, principalmente
+no Windows com Code::Blocks, foi um dos maiores desafios, pois exige
+dependências, flags de compilação e ajustes no ambiente.
+
+• Uso da linguagem C: por ser uma linguagem mais próxima do sistema,
+tarefas simples exigem mais cuidado, como manipulação de strings,
+ponteiros, structs e alocação de memória.
+
+• Integração entre C e GTK4: criar telas, botões, listas e eventos no
+GTK4 em C torna o desenvolvimento da interface mais trabalhoso do que em
+linguagens voltadas para front-end.
+
+• Configuração do Code::Blocks: foi necessário garantir que todos os
+arquivos .c e .h estivessem corretamente incluídos no projeto, além de
+configurar as opções de compilação com as bibliotecas do GTK4.
+
+• Organização do código: como o projeto envolve login, cadastro,
+persistência, validações, cálculo ortodôntico e interface gráfica, foi
+necessário separar bem as responsabilidades entre os arquivos.
+
+• Aprendizado da biblioteca GTK4: entender como funcionam widgets,
+sinais, callbacks e containers exigiu adaptação, principalmente por não
+ser uma ferramenta tão simples para iniciantes.
+
+LIMITAÇÕES DO PROJETO
+
+• Interface menos dinâmica: por ter sido desenvolvido em C com GTK4, a
+interface não alcança a mesma fluidez e dinamismo que poderia ser obtida
+com linguagens e frameworks especializados em front-end.
+
+• Maior complexidade para tarefas simples: ações como atualizar telas,
+organizar layouts ou validar campos exigem mais código do que em
+tecnologias mais modernas voltadas para interfaces gráficas.
+
+• Dependência do ambiente: o programa depende da instalação correta do
+GTK4 e da configuração do compilador, o que pode dificultar a execução
+em outros computadores.
+
+• Persistência simples em arquivos CSV: os dados são armazenados em
+arquivos .csv, o que funciona para o escopo do projeto, mas é mais
+limitado do que um banco de dados real.
+
+• Quantidade reduzida de parâmetros clínicos: o sistema utiliza apenas
+os valores necessários para o roteiro implementado, não abrangendo todos
+os parâmetros usados na prática ortodôntica.
+
+• Diagnóstico automatizado limitado: o sistema auxilia na análise, mas
+não substitui a avaliação profissional, pois decisões clínicas completas
+dependem de interpretação, exames e contexto do paciente.
+
+• Manutenção mais trabalhosa: alterações futuras na interface ou nas
+regras de cálculo podem exigir mudanças em várias partes do código,
+especialmente pela combinação de C com GTK4.

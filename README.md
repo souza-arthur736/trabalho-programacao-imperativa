@@ -210,10 +210,10 @@ executa:
    (crescimento) e o passo 6 (ANB):
    - Se o crescimento for **equilibrado**: Classe I é automática quando o
      ANB é normal; Classe II e III só são confirmadas se a combinação
-     maxila × mandíbula bater exatamente com uma das combinações descritas
+     maxila × mandíbula corresponder com uma das combinações descritas
      no material de referência (ex.: Classe II = maxila normal + mandíbula
      reduzida, OU maxila protruída + mandíbula normal, etc.). Se nenhuma
-     combinação bater, o paciente é classificado como **"incomum"**.
+     combinação corresponder, o paciente é classificado como **"incomum"**.
    - Se o crescimento for **vertical**, **horizontal** ou
      **misto/indefinido**: a classe segue só o ANB, sem exigir combinação
      específica de maxila/mandíbula (regra do material original, que libera

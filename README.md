@@ -79,8 +79,8 @@ diretório onde ele está sendo executado.
 | `main.c` | Ponto de entrada. Cria a `GtkApplication` e abre a tela de login. |
 | `mcnamara.h` | Cabeçalho do projeto: structs de dados (`Paciente`, `Dentista`, `MedidasOrtodonticas`, `ResultadoOrtodontico`, `TabelaMcNamara`) e a assinatura de **todas** as funções usadas nos outros `.c`. |
 | `login.c` | Tela de login/cadastro de dentista (`iniciar_login`). Valida campos e chama as funções de persistência de `repositorio.c`. |
-| `frontend.c` | Toda a interface do painel do dentista: lista de pacientes, cadastro/edição de paciente, tela de diagnóstico, tela de histórico, perfil do dentista. É o arquivo que conecta a UI com a lógica de cálculo e persistência. |
-| `analise_ortodontica.c` | **O "cérebro" do sistema.** Contém a tabela de McNamara e a função `calcularAnaliseOrtodontica`, que aplica todas as regras de negócio do diagnóstico e monta o texto do laudo. |
+| `frontend.c` | Toda a interface do painel do dentista: Lista de pacientes, cadastro e edição de dados do paciente, tela de diagnóstico, tela de histórico, perfil do dentista. É o arquivo que conecta a interface com a lógica de cálculo e persistência. |
+| `analise_ortodontica.c` | Contém a tabela de McNamara e a função `calcularAnaliseOrtodontica`, que aplica todas as regras de negócio do diagnóstico e monta o texto do laudo. |
 | `validacao.c` | Funções puras de validação de texto (senha, email, nome, CPF, telefone, data, CRO) e o filtro de teclado em tempo real dos campos de entrada (`filtrar_entry`). Não depende de regra clínica nenhuma, só de formato. |
 | `repositorio.c` | Toda a leitura/escrita em disco: `dentistas.csv` e `pacientes.csv` (CRUD simples baseado em linhas de texto separadas por `;`), além da exportação do laudo individual em `.txt` (`salvar_laudo_txt`). |
 

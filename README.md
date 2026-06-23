@@ -289,7 +289,7 @@ não deixa digitar número).
   Ricketts completos, USP/PROFIS), que aparecem como catálogo de apoio mas
   não fazem parte do roteiro de cálculo automatizado.
   
-  DESAFIOS DO PROJETO
+**DESAFIOS DO PROJETO
 
 • Instalação e configuração do GTK4: configurar o GTK4, principalmente
 no Windows com Code::Blocks, foi um dos maiores desafios, pois exige
@@ -315,7 +315,7 @@ necessário separar bem as responsabilidades entre os arquivos.
 sinais, callbacks e containers exigiu adaptação, principalmente por não
 ser uma ferramenta tão simples para iniciantes.
 
-LIMITAÇÕES DO PROJETO
+**LIMITAÇÕES DO PROJETO
 
 • Interface menos dinâmica: por ter sido desenvolvido em C com GTK4, a
 interface não alcança a mesma fluidez e dinamismo que poderia ser obtida

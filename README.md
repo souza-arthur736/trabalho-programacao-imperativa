@@ -238,7 +238,7 @@ Excel/LibreOffice).
 
 | Arquivo | Conteúdo | Gerenciado por |
 |---|---|---|
-| `dentistas.csv` | nome;email;cro;telefone;senha | `repositorio.c` |
+| `dentistas.csv` | nome; email; cro; telefone; senha | `repositorio.c` |
 | `pacientes_cadastrados.csv` | dados de cadastro do paciente (nome, idade, CPF, telefone, email, endereço, nascimento, observações) | `frontend.c` |
 | `pacientes.csv` | um diagnóstico completo por linha: dados do paciente + todas as medidas + classe/maxila/mandíbula/crescimento/perfil + o laudo inteiro (quebras de linha viram `\n` escapado dentro do campo) | `repositorio.c` |
 | `laudos/<paciente>_<data>.txt` | laudo individual em texto puro, gerado sob demanda pelo botão **"Exportar laudo (.txt)"** | `repositorio.c` (`salvar_laudo_txt`) |

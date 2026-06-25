@@ -18,7 +18,7 @@ Principais funcionalidades:
 
 ### Cadastro de dentista
 
-1. Abra o sistema.
+1. Abra o sistema clicando no aSistemaortodontico.exe
 2. Na tela inicial, selecione a opção de cadastro.
 3. Preencha os dados solicitados:
    - Nome
